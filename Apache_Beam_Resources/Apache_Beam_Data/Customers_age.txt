@@ -1,0 +1,10 @@
+1,John,NY,22
+2,Jim,LA,25
+3,Mary,NY,30
+4,Albert,LA,20
+5,Samza.NY,18
+6,Maria,NY,15
+7,Shreya,NY,30
+8,Kavita,LA,20
+9,Mona,NY,18
+10,Nandita,NY,15

@@ -1,0 +1,5 @@
+movieId,name,rating
+1,Titanic,3.5
+2,Avengers,4
+3,SpiderMan,4.5
+4,Green Miles,4
