@@ -1,0 +1,451 @@
+Okay so let’s start with the first type of Airflow executor - Sequential Executor.
+
+Sequential executor is the default executor that Airflow uses in its architecture and
+
+comes along with its fresh install.
+
+This executor can run only one task instance at a time means it does sequential execution
+
+of tasks and does not allow their parallel execution.
+
+This executor is good only for testing purposes.
+
+But to implement in the Real-Time projects is not recommended for obvious reasons.
+
+As it executes only one single task instance at a time in linear fashion, so implementing
+
+it in some real-life applications will never get you far.
+
+Now talking about the plus point of this executor.
+
+Sequential executor is the only executor that does not require you to install the database
+
+explicitly, as this executor uses SQLite and SQLite comes alongside with Airflow installation.
+
+Now if you want to run your DAG using sequential executor, you have to set it in?
+
+please guess.
+
+I have already shown it in previous lecture. OK Let me show you.
+
+Okay, so we have to set it in airflow.cfg file from where Airflow load all its configurations
+
+for run time .So if I scroll down,
+
+Yeah here, in the default configuration file we can see that the executor
+
+is already set to SequentialExecutor.
+
+But wait, throughout the course, whatever DAG we ran, either tutorial DAG or sales DAG,
+
+everywhere, we saw multiple parallel task instances running at the same time and all
+
+that time in this cfg file, executor was set to sequential executor only which does not
+
+allow parallelism.
+
+Then how it’s possible. How were we able to run parallel task in all the previous DAGs
+
+The answer is, since we are working in Airflow over Docker.
+
+That’s why the properties defined in compose file will override the definitions of cfg
+
+file.
+
+So until now to launch Airflow, we were running this local executor compose file and in this
+
+file, under the EXECUTOR property, it has specified ‘Local’ which means that each
+
+time we launch Airflow from this compose file, it will override the executor property of
+
+cfg file.
+
+And that is why in all our previous DAG runs, Airflow instance always started with a Local
+
+executor and not sequential one.
+
+Now Quick tip, anytime if you wish to check the running set of configurations, then you can
+
+always check them from ‘Configurations’ page in UI.
+
+Navigating through this page.
+
+These are the same airflow configurations that are written in airflow.cfg file and below
+
+that, if I scroll down we have ‘running configuration’ part,
+
+these are the list of configurations that are actually running for this Airflow instance.
+
+Go to executor, so here you can see that the default ‘SequentialExecutor’ value from
+
+airflow.cg file has been overridden with the Local executor value that came from the compose
+
+file.
+
+In this column, airflow.cfg means this particular property has been taken from cfg file and
+
+env var means that property has been taken from as environment variable set somewhere
+
+else like our compose file.
+
+One more thing to notice is since we have used Postgres as the database in compose file
+
+so sql_alchemy_conn for the local executor is set to Postrges values which again is coming from environment variable.
+
+Ok enough, Now let us try to run Airflow with Sequential executor and see any changes in
+
+the task executions.
+
+Change it Sequential.
+
+Also I will rename this DAG id to tutorial_1 . why, I will explain it in a bit.
+
+Save it. and restart it again.
+
+wait for sometime for the healthy status.
+
+Yup, it’s up and healthy.
+
+Go to the browser and open configuration again.
+
+We have successfully loaded Airflow with sequential executor.
+
+And for the sql_alchemy_conn it also got set to sqlite automatically which came as default.
+
+Every time you run a sequential executor, by default, you will get a sqlite connection
+
+only.
+
+Now for learning sequential task execution, lets run our favourite tutorial DAG once again.
+
+But prior to that, let me do one thing, I will remove this task relationships so that
+
+I am not explicitly providing any sequence of tasks to run first.
+
+All set to run DAG.
+
+But yeah. if you would have noticed after using sequential executor, here in UI we are
+
+seeing this message. The scheduler does not appear to be running.
+
+Actually using sequential executor, airflow schedular won’t run automatically as it
+
+was running while we used Local executor.
+
+So we have to manually trigger it.
+
+For that go to powershell and Enter in airflow container.
+
+To run Airflow scheduler, simply type airflow scheduler.
+
+Scheduler is started, but with some error message.
+
+I will come back to this message in a moment.
+
+Let’s first check our tasks.
+
+Go back to UI.
+
+Yup.
+
+The message is gone, means scheduler is up.
+
+Now here is an important thing to understand.
+
+Now that we are running scheduler manually by going inside the airflow container, that’s
+
+why, this time, every property it will pick from airflow.cfg file and not from docker
+
+compose file.
+
+And that is the reason we are seeing all these DAGs present in Airflow’s example folder.
+
+See, earlier in our comproperty to n so that those DAGs were
+
+not coming to UI but now since the scheduler was triggered manually from airflow’s container
+
+itself so compose file has become kind of void and irrelevant, no property will get
+
+overridden and every property of the cfg file will be behaved as first citizen.
+
+This can be acknowledged from cfg file.
+
+See, this Load_examples is true here and we are seeing the DAG examples.
+
+Alright, now explaining why we changed the DAG id, it is also related to example DAGs
+
+folder.
+
+Actually guys, out of all these DAGs of examples folder there is 1 DAG whose id is tutorial.
+
+In-fact the DAG on which we were working so far is copied from this DAG only present in
+
+examples folder and this time since all the DAGs are getting listed in UI, so we will
+
+get an ambiguity issue.
+
+There can’t be 2 DAGs with the same DAG ID.
+
+So, change the DAG id of our version of tutorial keeping it at toturial_1.
+
+I think, finally, we can trigger our DAG.
+
+Ok, all our tasks executed successfully in a sequence.
+
+You can go to the Gantt chart to get more clear picture.
+
+See, all of three tasks executed at different times.
+
+print_date was executed first, then sleep and at last templated.
+
+One task at a time.
+
+No parallel execution. This time, since there was no parallel execution,
+
+so the whole job took a little extra time than before.Hence, from this we can conclude that using sequential executor is very slow and not efficient.
+
+Great, now if I come back to this message that we saw in the terminal after running
+
+the airflow scheduler command.
+
+Guys parallelism defines the number of task instances that can be run simultaneously.
+
+In the airflow configuration if I show you the parallelism property is set to 32 but
+
+since we have run sequential executor so 32 is not applicable as sequential executor can
+
+run only one task at a time.
+
+That’s why when we run the scheduler in terminal, before starting, it itself changed
+
+the parallelism to 1. I think it is straight forward and clear.
+
+Okay so that’s it for the sequential executor, in the next lecture we will see
+
+local executor.
+
+Okay so let’s start with the first type of Airflow executor - Sequential Executor.
+
+Sequential executor is the default executor that Airflow uses in its architecture and
+
+comes along with its fresh install.
+
+This executor can run only one task instance at a time means it does sequential execution
+
+of tasks and does not allow their parallel execution.
+
+This executor is good only for testing purposes.
+
+But to implement in the Real-Time projects is not recommended for obvious reasons.
+
+As it executes only one single task instance at a time in linear fashion, so implementing
+
+it in some real-life applications will never get you far.
+
+Now talking about the plus point of this executor.
+
+Sequential executor is the only executor that does not require you to install the database
+
+explicitly, as this executor uses SQLite and SQLite comes alongside with Airflow installation.
+
+Now if you want to run your DAG using sequential executor, you have to set it in?
+
+please guess.
+
+I have already shown it in previous lecture. OK Let me show you.
+
+Okay, so we have to set it in airflow.cfg file from where Airflow load all its configurations
+
+for run time .So if I scroll down,
+
+Yeah here, in the default configuration file we can see that the executor
+
+is already set to SequentialExecutor.
+
+But wait, throughout the course, whatever DAG we ran, either tutorial DAG or sales DAG,
+
+everywhere, we saw multiple parallel task instances running at the same time and all
+
+that time in this cfg file, executor was set to sequential executor only which does not
+
+allow parallelism.
+
+Then how it’s possible. How were we able to run parallel task in all the previous DAGs
+
+The answer is, since we are working in Airflow over Docker.
+
+That’s why the properties defined in compose file will override the definitions of cfg
+
+file.
+
+So until now to launch Airflow, we were running this local executor compose file and in this
+
+file, under the EXECUTOR property, it has specified ‘Local’ which means that each
+
+time we launch Airflow from this compose file, it will override the executor property of
+
+cfg file.
+
+And that is why in all our previous DAG runs, Airflow instance always started with a Local
+
+executor and not sequential one.
+
+Now Quick tip, anytime if you wish to check the running set of configurations, then you can
+
+always check them from ‘Configurations’ page in UI.
+
+Navigating through this page.
+
+These are the same airflow configurations that are written in airflow.cfg file and below
+
+that, if I scroll down we have ‘running configuration’ part,
+
+these are the list of configurations that are actually running for this Airflow instance.
+
+Go to executor, so here you can see that the default ‘SequentialExecutor’ value from
+
+airflow.cg file has been overridden with the Local executor value that came from the compose
+
+file.
+
+In this column, airflow.cfg means this particular property has been taken from cfg file and
+
+env var means that property has been taken from as environment variable set somewhere
+
+else like our compose file.
+
+One more thing to notice is since we have used Postgres as the database in compose file
+
+so sql_alchemy_conn for the local executor is set to Postrges values which again is coming from environment variable.
+
+Ok enough, Now let us try to run Airflow with Sequential executor and see any changes in
+
+the task executions.
+
+Change it Sequential.
+
+Also I will rename this DAG id to tutorial_1 . why, I will explain it in a bit.
+
+Save it. and restart it again.
+
+wait for sometime for the healthy status.
+
+Yup, it’s up and healthy.
+
+Go to the browser and open configuration again.
+
+We have successfully loaded Airflow with sequential executor.
+
+And for the sql_alchemy_conn it also got set to sqlite automatically which came as default.
+
+Every time you run a sequential executor, by default, you will get a sqlite connection
+
+only.
+
+Now for learning sequential task execution, lets run our favourite tutorial DAG once again.
+
+But prior to that, let me do one thing, I will remove this task relationships so that
+
+I am not explicitly providing any sequence of tasks to run first.
+
+All set to run DAG.
+
+But yeah. if you would have noticed after using sequential executor, here in UI we are
+
+seeing this message. The scheduler does not appear to be running.
+
+Actually using sequential executor, airflow schedular won’t run automatically as it
+
+was running while we used Local executor.
+
+So we have to manually trigger it.
+
+For that go to powershell and Enter in airflow container.
+
+To run Airflow scheduler, simply type airflow scheduler.
+
+Scheduler is started, but with some error message.
+
+I will come back to this message in a moment.
+
+Let’s first check our tasks.
+
+Go back to UI.
+
+Yup.
+
+The message is gone, means scheduler is up.
+
+Now here is an important thing to understand.
+
+Now that we are running scheduler manually by going inside the airflow container, that’s
+
+why, this time, every property it will pick from airflow.cfg file and not from docker
+
+compose file.
+
+And that is the reason we are seeing all these DAGs present in Airflow’s example folder.
+
+See, earlier in our comproperty to n so that those DAGs were
+
+not coming to UI but now since the scheduler was triggered manually from airflow’s container
+
+itself so compose file has become kind of void and irrelevant, no property will get
+
+overridden and every property of the cfg file will be behaved as first citizen.
+
+This can be acknowledged from cfg file.
+
+See, this Load_examples is true here and we are seeing the DAG examples.
+
+Alright, now explaining why we changed the DAG id, it is also related to example DAGs
+
+folder.
+
+Actually guys, out of all these DAGs of examples folder there is 1 DAG whose id is tutorial.
+
+In-fact the DAG on which we were working so far is copied from this DAG only present in
+
+examples folder and this time since all the DAGs are getting listed in UI, so we will
+
+get an ambiguity issue.
+
+There can’t be 2 DAGs with the same DAG ID.
+
+So, change the DAG id of our version of tutorial keeping it at toturial_1.
+
+I think, finally, we can trigger our DAG.
+
+Ok, all our tasks executed successfully in a sequence.
+
+You can go to the Gantt chart to get more clear picture.
+
+See, all of three tasks executed at different times.
+
+print_date was executed first, then sleep and at last templated.
+
+One task at a time.
+
+No parallel execution. This time, since there was no parallel execution,
+
+so the whole job took a little extra time than before.Hence, from this we can conclude that using sequential executor is very slow and not efficient.
+
+Great, now if I come back to this message that we saw in the terminal after running
+
+the airflow scheduler command.
+
+Guys parallelism defines the number of task instances that can be run simultaneously.
+
+In the airflow configuration if I show you the parallelism property is set to 32 but
+
+since we have run sequential executor so 32 is not applicable as sequential executor can
+
+run only one task at a time.
+
+That’s why when we run the scheduler in terminal, before starting, it itself changed
+
+the parallelism to 1. I think it is straight forward and clear.
+
+Okay so that’s it for the sequential executor, in the next lecture we will see
+
+local executor.

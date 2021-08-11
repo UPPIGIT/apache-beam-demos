@@ -1,0 +1,218 @@
+Welcome guys.
+
+Starting from this lecture we will concentrate on Airflow and its components only and as
+
+a first move, I am going to explain the user interface of Apache Airflow.
+
+The built-in UI is a notable part of Apache Airflow.
+
+Airflow’s rich user interface makes it easy to visualize pipelines running in production,
+
+monitor their progress and troubleshoot issues.
+
+It allows you to see the status of your jobs, their underlying code, and furthermore, you
+
+can perform different actions on that jobs too.
+
+So Airflow’s UI is a thing which if operated correctly, will make your DAG managing task
+
+a way more easy.
+
+Having said this let’s start exploring it.
+
+Let me first check if our containers are up and running.
+
+Yes they are.
+
+Go to the browser at localhost:8080 This is the admin index or you can say the
+
+admin’s main page that shows us the status of all DAGs at a glance.
+
+Also, this page provides us the necessary primary-operations that we can perform on
+
+our DAGs.
+
+We have a navigation bar here, with some navigation links.
+
+In this DAGs table, currently we have only 1 DAG called ‘tutorial’.
+
+This is default DAG that came along with puckel’s project.
+
+As we move along in this course, we will create new DAGs and those DAGs will automatically
+
+get listed in this list.
+
+This DAG table has few columns.
+
+Let’s understand them one-by-one.
+
+First is this ‘edit button’.
+
+Clicking on, we got s ome information about tutorial DAG like, whether this DAG is paused
+
+or not, ours is paused, means it won’t run automatically as per the schedule, then DAG
+
+file location, owner na me and some other stuff.
+
+Next, we have a toggle switch, with ‘On’ and ‘Off’ label on it.
+
+This toggle switch basically shows that whether your DAG is enabled or disabled i.e. ifit is running
+
+or not.
+
+Clicking on this switch, you can change the status of your DAG from enabled to disabled
+
+and vice-versa.
+
+For its use-case, suppose you have a running DAG, and you are planning for the maintenance
+
+on some system, then you might want your DAG to be stopped from running.
+
+That thing, you can easily do it from here.
+
+With just a single click.
+
+Next column is the ‘DAG ID’ i.e., tutorial.
+
+Some of you might wonder that why it is showing DAG ID as ‘tutorial’ instead of ‘tuto’
+
+- the file name that we had in our DAGs folder was ‘tuto.py’.
+
+Guys actually tuto.py is the name of DAG definition file and not the name or ID of DAG itself.
+
+This tutorial is the unique id provided to this DAG in its definition file.
+
+You will get to know about it when I will open this DAG definition and explain it line
+
+by line. There we have mentioned tutorial as its DAG id.
+
+Clicking on this DAG ID will redirect you to the different views of your DAG executings.
+
+We are also going to cover this whole ‘View’ thing soon.
+
+Next column is ‘Schedule’.
+
+Schedule is more or less similar to the concept you would have used when scheduling a Cron.
+
+Schedule column indicates the interval of time after which a DAG will be triggered.
+
+Like in this case ‘tutorial’ DAG will be triggered after every one day.
+
+The schedule interval time is also set in the DAG definition file.
+
+If I click on Schedule, we got a table of DAG Runs.
+
+Currently a DAG ran only for 1 time so 1 row.
+
+This table provides us information like its state – it may be running, failed, success.
+
+DAG execution date - when the DAG was run.
+
+Then is run id.
+
+If the run_id starts with manual keyword it means the DAG was manually triggered, if it
+
+starts with scheduled keyword it means it ran automatically as per defined interval.
+
+Coming out of schedule, next we have ‘Owner’ column,
+
+specifying the owner of this particular DAG which is ‘airflow’.
+
+Then we have a column ‘Recent tasks’ containing few columns in its trunk.
+
+Recent tasks show a summary of the tasks that were present in the latest DAG run.
+
+If a DAG is currently running then it will show its live tasks status or if there are
+
+no active runs, then it will show the status of the tasks from the most recent DAG run.
+
+Each of the circle in this trunk represents a different status for tasks.
+
+If I hover over these circles, we have tips like success, running, failed then skipped ,up_for_reschedule
+
+and many more. .
+
+A quick add-on, there is no name assigned to this second last bubble.
+
+This represents no_status.
+
+When your tasks are not scheduled, in-fact not even queued, then they would be listed
+
+in no_status bubble.
+
+Afterwards we have ‘Last run’ which shows us the date and time when the recent DAG was
+
+run.
+
+Then is ‘DAG Runs’ column.
+
+DAG runs provide us the status of a complete DAG or you can say of the whole pipeline.
+
+Inside DAG runs we have three little circles, each for DAG ‘success’, ‘running’
+
+and ‘failed’ states.
+
+Where recent tasks column shows the status of different tasks within a DAG, this DAG
+
+runs column, shows the status of DAG as a whole.
+
+To understand it better, suppose you have a DAG containing three tasks.
+
+And out of them, two are successfully completed and the third one is yet in running state.
+
+In this situation the Recent tasks’ column will show us two circles like this.
+
+First circle depicts that 2 tasks are successful and next circle will show 1 in running state.
+
+Meanwhile, DAG runs tab will show you the status as ‘running’.
+
+No matter the two tasks from this DAG have completed successfully.
+
+It will only show the ‘success’ status when all the tasks in this DAG will have a
+
+successful completion.
+
+Okay, so at last, we have some quick links to hop around the UI.
+
+Clicking on any of this link will take you to that particular view for this DAG.
+
+Like ‘Tree view’, ‘Graph view’, ‘Task duration’ and few more links.
+
+The detailed tour of each of these links I am going to cover in later in this section.
+
+But let me cover these 2, here in this video only.
+
+Refresh and delete.
+
+‘Refresh or Reload’ button is important and is quite different from our browser’s
+
+‘Reload’ button.
+
+Suppose you have made some changes in your DAG file.
+
+Now those changes may take some time to get automatically reflected back in UI.
+
+But in case if you wish to reflect those changes promptly in Airflow UI, then you can manually
+
+do so by clicking on this Reload button. It says DAG tutorial is now fresh as a daizy.
+
+So you can consider this reload button as a hard reload button.
+
+The last is ‘Delete DAG’ button, clicking on which will delete your selected DAG and
+
+will erase all the data related to it like DAG runs, its metadata, delete everything
+
+but except the logs.
+
+Logs won’t get deleted.
+
+So guys this is just the overview of UI.
+
+I know since this is quite a new thing so getting familiar to it might take some time
+
+, but don’t worry as when we start doing practicals then
+
+these things will be on your fingertips.
+
+See you guys in the next lecture.
+

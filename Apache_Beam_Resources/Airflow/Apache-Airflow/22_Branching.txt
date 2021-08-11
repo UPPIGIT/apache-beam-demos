@@ -1,0 +1,175 @@
+Hello students, in this lecture we are going to learn Branching in Airflow using BranchPythonOperator.
+
+I will directly explain it using a scenario.
+
+Consider you have a workflow like this where a task t1 is outputting some integer value.
+
+After t1 three tasks are listed but the nature of use case is like that they will run conditionally.
+
+Task t1 will give control to the next task ‘depending’ upon that fetched value.
+
+If the fetched value ‘v’ is equals to 0, then perform the task t2, while discarding
+
+t3 and t4. if it is 1 then go and execute task t3 while discarding t2&t4, and in case
+
+if the fetched value is greater than 1, then execute task t4.
+
+Guys this is a very generic example I have put, basically all I want to state here is
+
+that, in Real-time projects there are cases where your workflow have to go down a certain
+
+path based on an arbitrary condition which is typically related to something that happened
+
+in upstream task.
+
+So how can you deal with such kind of workflow requirements.
+
+The answer is, to handle these such scenarios, Airflow has provided us a technique called
+
+‘Branching’ with which we can easily write down these workflows in our DAG using a special
+
+operator called ‘BranchPythonOperator’.
+
+So what is BranchPythonOperator?
+
+The BranchPythonOperator is an operator that helps a great way to execute conditional branches
+
+in your workflow.
+
+You can consider BranchPythonOperator much like the PythonOperator, as BranchPythonOperator
+
+too has the python_callable parameter.
+
+But the difference is, unlike in PythonOperator where you can pass any python function that
+
+can return anything, here in BranchPythonOperator in python_callable you have to pass a function
+
+that returns a task_id or a list of task_ids to which the control is to be given after
+
+meeting the specified conditions.
+
+Enough of the theory part, lets dive into the code and write a DAG for BranchPythonOperator.
+
+Giving you the brief idea of this example.
+
+In this example, we will pass some integer value from first task to 2nd task, 2nd task
+
+will check if the value retrieved is either even or odd.
+
+And depending upon the value, it will give the control to either of the tasks.
+
+If the values are even, even_task will execute, if value is odd then odd_task will run.
+
+Let us see create the code of it.
+
+Like I said, that for this example we will be sending a value from one task to another,
+
+it means for sure we have to use XComs here which we have already covered in previous
+
+lecture.
+
+So let me directly paste the code for first task which would be pushing the integer value.
+
+This is a very simple Xcom example at this stage where push_task is calling this push_function
+
+to push an integer value 4 as Xcom.
+
+The 2nd task we need will be to retrieve the XCom value and also check whether it is even
+
+or odd.
+
+So define it.
+
+Define this python function too.
+
+In this function first, we are pulling the XCom value and are storing it in a variable
+
+‘pulled_value’ and then we are checking if that value is even or odd.
+
+One thing to note here is, unlike we can return anything in python function, here, as we are
+
+calling this function in BranchPythonOperator, so we have to return the task id referencing
+
+a downstream task that will get executed after this task.
+
+So if the value is even return task_id – ‘even_task’ and for the odd value return ‘odd_task’.
+
+These two tasks, we are creating next.
+
+Even_task, using BashOperator is simply printing a message – ‘Got an even value and odd_task
+
+is printing got an odd value.
+
+Keep in mind to always create the task with the same task_id that you are returning in
+
+BranchPythonOperator’s callable function.
+
+Okay, we have all the tasks ready, lets define operator relationships.
+
+Task push_task will execute first, then the branch_task.
+
+next after one of this condition is met, either of these two tasks can execute, so put them
+
+in a set.
+
+Excellent!
+
+We have created a DAG that will run depending upon the arbitrary conditions.
+
+Let’s now run it.
+
+First the task push_task will execute, then the branch_task and after that depending on
+
+the conditions met, one of the tasks either even or odd_task will get executed.
+
+Refresh it again Great!
+
+Out of 4, we have 3 tasks marked as successful and odd_task has been marked as skipped, for
+
+obvious reasons.
+
+That was for even value.
+
+Let’s change the push value to any odd number
+
+This time the even_task was skipped and the odd_task was executed.
+
+Alright, now guys, one important point I would like to add while using branching is, using
+
+the branching method with property ‘depends_on_past’ set to ‘True’ is logically unsound and
+
+quite a risky.
+
+Why?
+
+If you remember, setting the property depends_on_past to true will make the specified task instance
+
+to run only if its previous run was succeeded.Right?
+
+Now consider the same example that we just did and depends_on_past would have been set
+
+to true.
+
+For the first DAG run, even_task was chosen and the odd_task was skipped.
+
+And in the second DAG run, odd_task was chosen.
+
+In this situation, with depends_on_past set to true since for the first DAG run the odd_task
+
+was skipped and did not run so it will not allow it to run for second time as well.
+
+So this situation will invariably lead your workflow to block tasks that depend on their
+
+past success.
+
+And as a result, you will be locked in your data pipeline.
+
+That’s why it is recommended to not use the depends_on_past property when using branching.
+
+Great!
+
+So that’s how using BranchPythonOperator, you can code your workflow whose execution
+
+depends on some conditions.
+
+You can think of some conditions and try it implementing in our store_sales project.

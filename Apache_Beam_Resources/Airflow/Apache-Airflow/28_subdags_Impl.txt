@@ -1,0 +1,409 @@
+Airlfow has a very good example of SubDAg in its example DAgs folder.
+
+To get it here in UI, we have to set LOAD_EX to y, in docker compose file.
+
+So I'll set it to 'y'. Save it,
+
+and I'll restart the webserver
+
+Ok so after restart we got all the examples DAG listed in UI.
+
+In this list you will find at least one example DAG for every Airflow concept.
+
+like example Dag for Bash operator, for python operator, and many more.
+
+I will recommend you, if possible, please try to explore all these example DAGs and go through their coding
+
+part.
+
+It is definitely going to help you learning Airflow much better.
+
+Anyway, The example DAG I’m looking for is… this example_subdag_operator written
+
+for SubDAGs.
+
+Before explaining the code of it.
+
+Let me show what they want to achieve in this DAG.
+
+Now if we see the DAG definition file of it.
+
+in the code, we have default dictionary
+
+then dag instantiation.
+
+with the DAG name coming from here.
+
+These start task, some_other_task, and end task just uses a DummyOperator and literally
+
+does nothing.
+
+Also notice that section_1 and section_2 are the ones which have subdags in them.
+
+So first coming to section_1 task.
+
+This is how we create a subdag using, SubDagOperator class, which in turn is imported from Airflow
+
+operators.
+
+SubDagOperator is an operator class used to attach the SubDAG with its parent DAG.
+
+Like any other operator it has task_id, and instantiated dag.
+
+Along with these, to write all the subdag’s tasks we have to use a python factory function
+
+which in this example is this subdag function.
+
+A ‘factory function’ is a special function that returns a DAG object with associated
+
+tasks in that DAG.
+
+Now here are some important things to note First of all, this subdag is not an airflow
+
+function, it is a normal user defined function to which you can give any name.
+
+In this example, Airflow chose to keep the name as subdag.
+
+Also, this factory function can take these many arguments, DAG_id, then child dag name
+
+and default_dictionary.
+
+Second, this factory function should be defined in a different file and not in this same file
+
+where we are writing the main DAG.
+
+Write it in a separate file and then import it in this DAG definition file.
+
+3rd point is, SubDagOperator by default uses the SequentialExecutor for its underlying
+
+tasks.
+
+so even if you are using Local executor for the parent DAG, the SubDAG tasks will get
+
+executed sequentially – one after the another.
+
+But in case if you wish to use some other executor for SubDAG then you can do so by
+
+passing a parameter executor into it, like this.
+
+But again, guys according to Airflow’s documentation using LocalExecutor for SubDags can be problematic
+
+as it may over-subscribe your workers, running multiple tasks in a single slot.
+
+So you have to be very careful while setting the subdag executor to local.
+
+If there are lot of tasks in your subdag then running all those tasks in parallel using
+
+local executor may stuck the overall job.
+
+Alright so section_1 task is done and similar to this we have the section_2 SubDAG with just
+
+name changes.
+
+Now let’s go to the file where this subdag factory function is defined.
+
+Let me see where Airflow has placed that file.
+
+This is the ‘file location’ where this main DAG is present.
+
+Infact, all the default example_dags that came along with Airflow installation are placed
+
+in this location only, inside the example_dags folder of airflow container.
+
+Go to the Windows PowerShell, and open Airflow CLI.
+
+we are in the Airflow’s container.
+
+Ok, so we are at the /usr/local/airflow
+
+But we need to go at user/local.
+
+One step down.
+
+now copy and paste the address.
+
+So, we are into example_dags folder. and we have all the example_DAGs listed here.
+
+Along with the dag files… here we have a folder ‘subdags’ where all the SubDAGs
+
+are placed.
+
+This is our file which we imported in our main
+
+DAG definition.
+
+Open it.
+
+This is the very simple code for our SubDAG.
+
+It is more or less same like main DAG file.
+
+nothing new just some old stuff.
+
+So first of all some basic imports and the subdag’ factory function definition.
+
+Inside it, we have the DAG instantiated with this dag_id.
+
+Guys by convention, a SubDAG’s dag_id should be prefixed by its parent and a dot.
+
+Together it will become parent_dag_name dot child_dag_name.
+
+that’s what is done here.
+
+After the DAG is instantiated, you can define any number of tasks here.
+
+Since in this example only Dummy operators are being used so instead of writing 5 individual
+
+tasks they defined them in 1 shot inside a ‘for’ loop.
+
+But remember, for your projects you have to define the sub-tasks here one by one according to your
+
+use case.
+
+At last, this is an important part.
+
+In the return statement, A DAG object is returned so that our main DAG file can use this Dag
+
+object and can fit the tasks defined here in it.
+
+So that was how a SubDAG can be written, Go back to the UI and run our main DAG file.
+
+Notice that SubDAGs are visually represented by this dark grey background colour in UI.
+
+section 1 and section 2 were SubDAGs
+
+they are in grey colour
+
+Yeah, section-1 is running.
+
+I will wait for some time to let it complete.
+
+All tasks executed successfully.
+
+now click on it.
+
+Here a new option came. Zoom into SunDAG.
+
+Yes these are the 5 tasks returned from subdag factory function.
+
+Here also we have 5 dummy tasks.
+
+listed inside that function.
+
+So guys, that’s how you can make your complex and lengthy DAGs to visually look better in
+
+a managed size using SubDAGs.
+
+At task execution level, it has no effect.
+
+But it helps developer to visualize the DAG in a better way.
+
+I hope you enjoy the lecture.
+
+Thank you
+
+Airlfow has a very good example of SubDAg in its example DAgs folder.
+
+To get it here in UI, we have to set LOAD_EX to y, in docker compose file.
+
+So I'll set it to 'y'. Save it,
+
+and I'll restart the webserver
+
+Ok so after restart we got all the examples DAG listed in UI.
+
+In this list you will find at least one example DAG for every Airflow concept.
+
+like example Dag for Bash operator, for python operator, and many more.
+
+I will recommend you, if possible, please try to explore all these example DAGs and go through their coding
+
+part.
+
+It is definitely going to help you learning Airflow much better.
+
+Anyway, The example DAG I’m looking for is… this example_subdag_operator written
+
+for SubDAGs.
+
+Before explaining the code of it.
+
+Let me show what they want to achieve in this DAG.
+
+Now if we see the DAG definition file of it.
+
+in the code, we have default dictionary
+
+then dag instantiation.
+
+with the DAG name coming from here.
+
+These start task, some_other_task, and end task just uses a DummyOperator and literally
+
+does nothing.
+
+Also notice that section_1 and section_2 are the ones which have subdags in them.
+
+So first coming to section_1 task.
+
+This is how we create a subdag using, SubDagOperator class, which in turn is imported from Airflow
+
+operators.
+
+SubDagOperator is an operator class used to attach the SubDAG with its parent DAG.
+
+Like any other operator it has task_id, and instantiated dag.
+
+Along with these, to write all the subdag’s tasks we have to use a python factory function
+
+which in this example is this subdag function.
+
+A ‘factory function’ is a special function that returns a DAG object with associated
+
+tasks in that DAG.
+
+Now here are some important things to note First of all, this subdag is not an airflow
+
+function, it is a normal user defined function to which you can give any name.
+
+In this example, Airflow chose to keep the name as subdag.
+
+Also, this factory function can take these many arguments, DAG_id, then child dag name
+
+and default_dictionary.
+
+Second, this factory function should be defined in a different file and not in this same file
+
+where we are writing the main DAG.
+
+Write it in a separate file and then import it in this DAG definition file.
+
+3rd point is, SubDagOperator by default uses the SequentialExecutor for its underlying
+
+tasks.
+
+so even if you are using Local executor for the parent DAG, the SubDAG tasks will get
+
+executed sequentially – one after the another.
+
+But in case if you wish to use some other executor for SubDAG then you can do so by
+
+passing a parameter executor into it, like this.
+
+But again, guys according to Airflow’s documentation using LocalExecutor for SubDags can be problematic
+
+as it may over-subscribe your workers, running multiple tasks in a single slot.
+
+So you have to be very careful while setting the subdag executor to local.
+
+If there are lot of tasks in your subdag then running all those tasks in parallel using
+
+local executor may stuck the overall job.
+
+Alright so section_1 task is done and similar to this we have the section_2 SubDAG with just
+
+name changes.
+
+Now let’s go to the file where this subdag factory function is defined.
+
+Let me see where Airflow has placed that file.
+
+This is the ‘file location’ where this main DAG is present.
+
+Infact, all the default example_dags that came along with Airflow installation are placed
+
+in this location only, inside the example_dags folder of airflow container.
+
+Go to the Windows PowerShell, and open Airflow CLI.
+
+we are in the Airflow’s container.
+
+Ok, so we are at the /usr/local/airflow
+
+But we need to go at user/local.
+
+One step down.
+
+now copy and paste the address.
+
+So, we are into example_dags folder. and we have all the example_DAGs listed here.
+
+Along with the dag files… here we have a folder ‘subdags’ where all the SubDAGs
+
+are placed.
+
+This is our file which we imported in our main
+
+DAG definition.
+
+Open it.
+
+This is the very simple code for our SubDAG.
+
+It is more or less same like main DAG file.
+
+nothing new just some old stuff.
+
+So first of all some basic imports and the subdag’ factory function definition.
+
+Inside it, we have the DAG instantiated with this dag_id.
+
+Guys by convention, a SubDAG’s dag_id should be prefixed by its parent and a dot.
+
+Together it will become parent_dag_name dot child_dag_name.
+
+that’s what is done here.
+
+After the DAG is instantiated, you can define any number of tasks here.
+
+Since in this example only Dummy operators are being used so instead of writing 5 individual
+
+tasks they defined them in 1 shot inside a ‘for’ loop.
+
+But remember, for your projects you have to define the sub-tasks here one by one according to your
+
+use case.
+
+At last, this is an important part.
+
+In the return statement, A DAG object is returned so that our main DAG file can use this Dag
+
+object and can fit the tasks defined here in it.
+
+So that was how a SubDAG can be written, Go back to the UI and run our main DAG file.
+
+Notice that SubDAGs are visually represented by this dark grey background colour in UI.
+
+section 1 and section 2 were SubDAGs
+
+they are in grey colour
+
+Yeah, section-1 is running.
+
+I will wait for some time to let it complete.
+
+All tasks executed successfully.
+
+now click on it.
+
+Here a new option came. Zoom into SunDAG.
+
+Yes these are the 5 tasks returned from subdag factory function.
+
+Here also we have 5 dummy tasks.
+
+listed inside that function.
+
+So guys, that’s how you can make your complex and lengthy DAGs to visually look better in
+
+a managed size using SubDAGs.
+
+At task execution level, it has no effect.
+
+But it helps developer to visualize the DAG in a better way.
+
+I hope you enjoy the lecture.
+
+Thank you
+
+

@@ -1,0 +1,255 @@
+Apache-Airflow
+------------
+So let’s start this course with the very first lecture on ‘What is Apache Airflow?’
+
+According to its official documentation, in one line, ‘Airflow is an open source platform to programmatically author, schedule and monitor workflows.’
+
+It is an open-source tool to orchestrate and monitor complex computational workflows and data processing pipelines.
+
+Basically, you can see it as a job scheduler where a job can consist of multiple tasks with complex dependencies.
+
+Airflow will run the tasks of your job at set time while following their defined dependencies.
+
+Dependencies means which tasks will run first than the others, which tasks are dependent on what tasks to get trigger, all this stuff.
+
+In Airflow, Workflows are written as code in form of Directed Acyclic Graphs (DAGs) of tasks.
+
+What exactly is this DAG in Airflow is explained next in this section.
+
+For the time being just understand that, in Airflow, to schedule our job, we write the code as a DAG definition file, wherein you list down a series of tasks with their dependencies.
+
+Now since the workflows are defined as a DAG code, they become more dynamic, manageable,testable, and collaborative.
+
+Using Airflow, you can easily apply good development practices to the process of creation of your workflows which is harder when they are defined in like XML for oozie.
+
+It is 100% developed in Python so it is able to interface with any third party python API or database to extract, transform, or load your data into its final destination.
+
+Also the DAG file’s code which we write to schedule the job is also written in Python but its execution is not limited to Python.
+
+It can execute an endless variety of tasks irrespective of their language.
+
+It can execute any language’s task, analytical, machine learning or ETL tasks and the list is growing day by day because of it strong community.
+
+With its out-of-the-box, browser-based rich user interface you can easily visualise, monitor progress and troubleshoot your workflow pipelines Airflow also provide rich set of command line
+utilities which can be used to perform complex operations on DAG.
+
+Now highlighting some of its use cases.
+
+Guys earlier we were writing only ETL based pipelines but the world is not all about just
+
+writing ETL pipelines to automate things.
+
+There are other use cases too in which you might have to perform slightly off tasks either once or periodically.Like transferring data from one task to other,
+
+performing backups, Automating your DevOps operations, kick off Machine Learning Pipelines,or Data processing for recommendation engines and the possibilities are endless.
+
+All these tasks are handled very smoothly in Airflow and that is why it can be seen as a replacement to the conventional schedulers like cron, oozie and others.
+
+Now, Non technically if I talk about it.
+
+Apache airflow was initiated by Airbnb in 2015 and then later on in 2016, it was open sourced under Apache certification and has just recently became an Apache Top-Level Project.
+
+Its community is super growing with major committers of project being Bloomberg, Lyft,Robinhood and many more.
+
+Up to current date, it has 720 contributors, more than 6000 commits, and 11,000+ stars on Github.
+
+Moreover, it has seen a high adoption rate among various companies since its commence,with over 230 companies officially using it as of now.
+
+That’s it for the very basic introduction of Airflow and guys please be ensured that every technical keyword mentioned in this introduction lecture is explained with full
+
+details in the course.
+
+So even if you missed understanding some of the points, then never mind, it is just the introduction.In coming lectures, you will understand every technical term used in here.
+
+-------------------------------------------------------------------------------------------------------------------
+Alright, so in the last lecture we had a glimpse of what is Apache Airflow.
+
+And we got some answers to the questions like what it is, what it does, and all other basic  questions.
+
+But before we drill more into Airflow, lets first discover what were the other pipeline management systems that people used before Airflow was introduced.
+
+Guys this lecture is important, as I assume before learning any new technology, to make its understandings clear, we should first know why the need to develop that technology arose.
+
+So this is a basic ETL approach in which we extract the data, transform it according to our requirements and then load the transformed data into some storage.
+
+For a very basic naive ETL, each step of this process would have only 1 script. 1 script for extract phase, 1 for transform and 1 for the load phase.
+
+A very basic of basic ETL pipeline.
+
+Now conventionally, to schedule these pipelines we used the concept ‘Cronjobs’.
+
+Cron, most of you guys would probably know, is a Linux utility which schedules a ‘script’ or a ‘task’ on a server to run automatically at a ‘specified date and time’.
+and these scheduled ‘tasks’ are called as ‘Cron Jobs.’
+
+But nowadays ever since the commence of Big Data, our pipelines are not that much simple.
+
+In Real-Time projects, there can be ‘n’ number of scripts written for each phase of ETL pipeline with again ‘n’ number of tasks in them.
+
+Which eventually makes the pipeline grow bigger, bigger and more bigger.
+
+As I already mentioned that conventionally we use Cron to schedule the jobs in a pipeline.
+
+So if we try to schedule this immense pipeline using Cron, we have to face multiple problems.
+
+Which problems?
+
+Let’s identify them.
+
+The very first problem is ‘Error Handling’. That is… if a job fails for some reason, what should happen? Should it retry to run that job again?
+
+If so, then how many times should it retry or at what time interval should it rerun that job again?
+
+Next problem is… the changes made to the crontab file are not easily traceable.
+
+Where a crontab file is a file that contains the schedule of jobs to run on that system.
+
+Actually, it not only stores the scheduling of jobs of that machine, but it also contains the scheduling of jobs across multiple machines.
+
+Since there is no centralized scheduler among Cron machines, so the changes made into this file are never tracked.
+
+The third issue is ‘Execution Dependencies’.
+
+Consider a cronjob in which you have scheduled two tasks A and B in such a way that B is dependent on A. Now A takes 2 hours to run and you have scheduled it to run at 8pm.
+
+Keeping in mind the execution time of task A, you have scheduled the second task (taskB) at 10:30pm by giving it a safe gap of half hour.
+
+Now at some day, suppose your task A took 3 hours to run.Now since we have already set task B to run at 10:30pm so it will automatically run even before task A has completed and it might fail since task B was dependent on A’s result.
+
+And this thing, you will never want to happen.
+
+So that is another major problem in cronjobs.
+
+The fourth problem with cronjobs is that, the performance of job is not transparent.As in Cron, the log of job outputs is not kept in a centralized place.
+
+Rather Cron keeps the job output log on the server itself where the jobs are run.So, it is hard and costly to navigate and know if a job is failed or has executed successfully.
+
+Next is the tasks tracking problem.
+
+In Cron it is difficult to track which task is taking too long to complete, and how to keep track of dependencies, failed tasks, success tasks, these things are a concern in Cron.
+
+Another one is how to process historical data in which you can run data of like 6 months or a year old.
+
+There is no automated provision for that. A lot of manual efforts would be required.
+
+So these were some drawbacks of our very basic and one of the initial scheduling tools.
+
+But it’s also not like that Airflow is the only scheduler that has come after Cron.
+
+Apart from Cron jobs we have some other tools doing the same scheduling thing like Luigi,Oozie etc but all those are having some limitations.
+
+Like Luigi from Spotify does not have an in-built triggering, require some manual efforts.Then we have Oozie, that was and is very famous in the Hadoop world.
+
+It had some quite a good features, like it provides UI for monitoring, for tracking. It also provides provision to automate the rerun of failed tasks with defined number of times and intervals.
+
+But Oozie uses XML to create workflows which is a kind of obsolete. Moreover, using XMLs, the length of our workflow code becomes massive and unmanageable.
+
+For a developer working with Oozie, it’s really hard to build complex pipelines.
+
+Again, as in Real-Time projects the pipelines are much complex in their nature, so there is a little room left for Oozie to get deployed in Real-Time complex projects.
+
+Also, Oozie is not as configurable as Apache Airflow so due to these reasons, most of the communities are kind of ignoring Oozie these days and are migrating to Airflow.
+
+Alright, so guys that was an idea how conventional systems were getting scheduled earlier, we got to know in what areas these schedulers were having shortcomings.
+
+Now in the next lecture we will see how airflow is filling those gaps and how it schedules the jobs to handle these problems.
+---------------------------------------------------------------------------------------------------------------------------
+
+In previous lecture we saw some of the downsides of conventional scheduling approaches.
+
+Now in this lecture we will see why Airflow has become an increasingly popular tool for data management teams.
+
+Guys Airflow’s workflow is designed as a DAG - Directed Acyclic Graph, which means that you can divide your workflow into small-small tasks that can be executed independently.
+
+I believe most of you would be familiar about DAG but for others please don’t worry as I have explained it in detail in the next lecture.
+
+Now due of this DAG workflow, Airflow offers a way to build and schedule complex and dynamic data pipelines with the following features.
+
+First is Dynamic – 
+DAG in Airflow is completely dynamic and flexible in nature, which means you can have your custom logic while defining your DAG.
+
+Airflow pipelines are configured as code written in Python language.
+
+Writing a custom code means you have full control of your DAG, hence can easily play with the tasks and their parallelism.
+
+Apache airflow exposes its DAG file to us to make edits in it according to our requirements.
+
+We will see it in further lectures how exactly we do this.
+
+Extensible – T
+he second benefit of having airflow is that, it is extensible.
+
+Airflow provides a number of operators, and executors which supports almost every type of task execution.
+
+You can schedule tasks of any type, it can be a shell script, any programming language code like python function, or a python file, Big Data logic etc.
+
+So anything you can think of as a task can be included in your DAG.
+
+Moreover, if in case you can’t find any operator or executors matching your requirements, then Airflow gives you the freedom to easily define your own operators, executors to carry
+out your tasks.
+
+Let’s say for scrips of some XYZ language airflow does not have current support, then you can write your own plugin for that language by extending the airflow framework and then
+include that in your DAG.
+
+So you can say it fits the level of abstraction that suits your environment.
+
+Next is scalability- 
+Because of its modular architecture and message queuing system, Airflow provides us a good metrics of scalability.
+
+Scalability in scheduling terms means how many tasks or DAGs it can handle.
+
+In most of the conventional schedulers, they provide a scalability to a certain amount but you know once we cross a threshold limit, they will start giving us performance issues.
+
+But this is not in case of Apache Airflow.
+
+In Airflow’s multi-node cluster system, you can add ‘N’ number of worker nodes to extend the powers of your Airflow and for this reason it is highly scalable and according
+to Airflow’s official documentation Airflow is ready to scale to infinity.
+
+The other important feature of Apache Airflow is it is highly configurable.
+
+1 aspect of it I already discussed which was the DAG customization. 
+
+Airflow provides us DAG as a ‘configurable code’.
+
+You can make modifications in the code of DAG definition file as per your needs.
+
+Not only DAG, Airflow even allows you to configure its core settings from a file called ‘airflow.cfg’. From this file you can control your whole Airflow workings like how many DAGs it can
+handle concurrently, where to store logs remotely or locally, or you know any administrator settings.
+
+We will discuss about these configurations in some upcoming lecture.
+
+Now these were some of the core benefits of using Apache Airflow.
+
+Apart from these there are other benefits like -
+
+Airflow exposes its users a very elegant UI from where they can easily monitor their DAGs and their tasks.
+
+It provides a graphical representation of DAGs with a full bunch of metrics.With these metrics you can see which tasks are taking too much time or what is the current
+status of our DAG and all these stuffs.
+
+We will get to know the full list of it while we do practicals.
+
+All the configuration settings we make are centralized, so it is easy to track the changes that we made in the code.
+
+And yes, all those problems which I mentioned with respect to Cron jobs are very intelligently handled by Apache airflow.
+
+It can handle upstream/downstream dependencies elegantly.
+
+So in the previous example we discussed where task B was dependent on task A, then in case of Apache Airflow case, say if task A has not completed, then task B would not run.
+Or if task A fails for some reason, then it won’t trigger task B. Rather, it will retry
+
+to execute task A for the specified number of times to get its successful completion and then trigger task B. In Airflow you can reprocess the historical jobs easily.
+
+Airflow has a good mechanism to handle errors and failures with email alerting feature.
+
+You can configure it to send the alert emails to you for cases like if any task is retried,any task has failed or any DAG has got a successful completion etc events.
+
+And of-course, since it is an open source product, Apache Airflow has a very active community and day by day new connectors and plugins are getting committed to Airflow project
+
+which would widen its scope to get used in variety of projects.
+
+So, in the end, I would say due to these many features a lot of companies which includes some big ones like Spotify, Lyft, Airbnb have started using Airflow in their projects.
+
+In fact, few of them have already migrated their schedulers to Airflow.
+
+They are using airflows to schedule a variety of applications of ETL tools, Data science jobs, Machine leaning, building data lakes, Analytical jobs and the list is never ending.
+

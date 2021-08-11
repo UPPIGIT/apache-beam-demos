@@ -1,0 +1,305 @@
+Welcome to this lecture, where we are going to discuss airflow’s configuration file
+
+in some more detail.
+
+I have already given the glimpse of it in the understanding directories section and
+
+I believe till now you would have understood the importance of this file.
+
+This lecture is focused to list down and give you a good revision of what all configurations
+
+we have covered so far.
+
+While some newer configurations will get added, earlier ones will be revised.
+
+Okay so starting with the Airflow core settings, we have ‘dags_folder’ where all our Airflow
+
+DAG files reside.
+
+After, coming quite a long way in this course, you guys must be familiar with this dags_folder
+
+path.
+
+We have used it all the way throughout the course.
+
+Please make sure if you wish to change this path then always enter an absolute (and not
+
+relative) path here.
+
+Next is the ‘base_log_folder’.
+
+base_log_folder defines the path where Airflow should store its log files.
+
+By default, it stores under the ‘logs’ folder of where your Airflow is installed
+
+(on the same machine), but yeah, if configured, then you can also store your logs to some
+
+cloud storage as well.
+
+Then, ‘remote_logging’.
+
+Airflow gives you the freedom to store its logs anywhere other than local as well.
+
+So these remote configurations, comes into picture, if you have configured to store your
+
+Airflow logs on cloud storage like S3 or Google Cloud.
+
+Since by default it stores logs on your local machine so it’s set to ‘false’.
+
+But if you want to store your logs in cloud, then these configurations like remote server
+
+connection id, its base folder and all have to be set.
+
+I will see, if I can add a lecture in this course to store logs in a cloud.
+
+These again are all related to log settings.
+
+Like ‘logging_level’ (what level you want to log). by default, is INFO, but you can
+
+set it to debug, warning, error.
+
+Scrolling down, is the default_timezone.
+
+By default, it is UTC.
+
+Then is ‘executor’.
+
+This has been already discussed.
+
+By default, it is SequentialExecutor, but since Sequential does not support parallelism,
+
+so to scale, you can switch to Local or Celery from here.
+
+next is the sql alchemy connection.
+
+We know, Airflow uses some metadata database to store information about DAGs, tasks, their
+
+statuses.
+
+And its webserver talks to that database to present us all this information in pictorial
+
+views.
+
+Right.
+
+Now to connect the webserver with its metadata, Airflow uses an ORM ‘SqlAlchemy’, that
+
+helps to connect the webserver which is a flask application with the backend database.
+
+This is the default SqlAlchemy connection string to that database.
+
+Since by default Airflow uses a Sequential executor with SQLite as its database.
+
+So SqlAlchemy connection is set to that for SQLite DB.
+
+But if you use any other executor like Local, or Celery then SQLite won’t be used, you
+
+will have to pass the relevant connection string of some robust database you will go
+
+with.
+
+In our project, this property is being set in entrypoint script so was commented here.
+
+Then we have ‘sql_alchemy_pool_size’ which defines the maximum number of database connections
+
+in a pool.
+
+It’s 5 here which means that at a time only 5 number of ‘active’ database connections
+
+can be made.
+
+Scroll down… okay we have parallelism and dag-concurrency which is already explained
+
+in detail in the Local executor’s lecture.
+
+Next is ‘dags_are_paused_at_creation’.
+
+From the name itself, it is pretty much clear.
+
+This defines if your newly created DAG should be paused or un-paused whenever it is loaded
+
+in the DAG list.
+
+Setting it to False will enable your DAG automatically.
+
+‘non_pooled_task_slot_count’.
+
+Guys while creating ‘Pools’ you were assigning a certain number of worker slots to a Pool.
+
+But in case, if you don’t create those pools, then by default, tasks are run with a ‘default
+
+pool’, the size of which is guided from here.
+
+So if you are not creating any pools, then by default, tasks will be run with a ‘default
+
+pool’ of 128 workers.
+
+Moving on, we have ‘max_active_runs_per_dag’.
+
+This property defines how many instances of one DAG can run at a particular time.
+
+By default, Airflow allows 16 DAG runs at one instance of time.
+
+This property becomes important in case of backfilling.
+
+Remember the ‘tutorial’ example.
+
+There, the start date of tutorial DAG was set to year 2015 and it was set to run daily
+
+which would make it to run more than 1000 times if triggered today.
+
+No one would trigger such type of DAG intentionally but to avoid the situation of accidental runs,
+
+this property was introduced.
+
+This property would allow only a set number of DAG runs.
+
+Then is ‘load_examples’ which we all know is to whether list the default example DAGs
+
+in UI list or not.
+
+By default, it’s set to true.
+
+‘plugins_folder’.
+
+In case if you have built some plugins for your application, then from here you can provide
+
+the plugins folder path.
+
+Then we have an important property ‘fernet_key’ to encrypt the data.
+
+It guarantees that a message encrypted using it cannot be manipulated or read without the
+
+key.
+
+Any encrypted message will require a fernet key to decrypt that message.
+
+Again, this fernet_key value is coming from entrypoint.sh script.
+
+Okay so these were some of the principal Airflow ‘core’ settings.
+
+Scroll down… okay under the webserver we have base_url at which airflow should point
+
+to.
+
+Since as of now we are working on localhost, so it’s localhost address.
+
+But in production it will be your live URL. if you remember, each time when we trigger
+
+a DAG manually from Airflow UI, we were redirected to the Tree view of that DAG, right.
+
+that default dag view is set from here.
+
+You can select from any view like graph, Gantt, or whatever.
+
+Then dag orientation is from left to right.
+
+Moving on next, here we have the smtp settings.
+
+If you are sending any alert emails from Airflow you can configure the SMTP configurations
+
+from here.
+
+If you remember this thing, we had set in compose file for store_sales project, the
+
+same derivatives can be set in cfg file as well.
+
+Then we have the [celery] section where all the configurations for celery executor are
+
+defined.
+
+So in case if you have deployed a celery executor then you can configure it from here.
+
+this worker_concurrency is quite important, and I have already explained it in celery
+
+executors lecture.
+
+Next is ‘broker_url’.
+
+This also an important property from production environment perspective.
+
+As we saw in architecture lectures, the scheduler puts the task in form of messages in the messaging
+
+queue and from there they are transferred to the workers.
+
+Now the question is who exactly will do that transfer.
+
+I mean who will act as postman for those messages put in the queue.
+
+It is the - the celery broker.
+
+Celery broker like Redis, or RabbitMQ delivers that sent message from a queue to the celery
+
+workers for execution and here we pass the celery broker URL for that.
+
+Get it?
+
+Now after the task has been processed and finished by the workers, whom should it report
+
+to.
+
+Where it should tell that the given job to that worker has been done.
+
+This is what a ‘result_backend’ defines.
+
+Celery workers report to the result_backend upon task completion which in turn is updated
+
+into the metadata.
+
+we have a [scheduler] section.
+
+This one is important ‘dag_dir_list_interval’.
+
+This directive sets how often the scheduler should check the dags folder in order to look
+
+for any new or updated dags.
+
+Guys in your Airflow setup when your scheduler is in running state, you may have noticed
+
+that, each time when we create a new DAG, it never gets listed in the webserver immediately
+
+as we create it.
+
+That is because of this property.
+
+By default, it is set to 300 seconds means scheduler will scan your dags directory to
+
+look for any changes after every 5 minutes and then refresh the webserver.
+
+You can change this time depending upon how often you update your dags.
+
+Then we have ‘catch_up_default’ property.
+
+This property, when set to true, will start backfilling your DAG if the start date is
+
+less than current date of its execution.
+
+By default, catchup is set to true, which means, any of your DAG whose start date is
+
+set to before the date of its execution, will automatically start backfilling of the missing
+
+DAG runs.
+
+But sometimes, this backfilling can be overwhelming for your system where you have resource intensive
+
+DAGs with pending DAG runs.
+
+So as a precaution, you can set it to false from here.
+
+Anyhow, if you wish turn it ON for some DAGs, then you can set it to true in your DAG file,
+
+the same way we turned it OFF in tutorial DAG.
+
+Ammm I guess that’s it, we have covered all the major configurations that are generally
+
+used in Airflow.
+
+Good thing about this cfg file is, over each configuration, a well detailed description
+
+of that property is defined in comments.
+
+So anytime, if you are doubtful with a property, you can always refer to the comments given
+
+above it.
+
+Thanks

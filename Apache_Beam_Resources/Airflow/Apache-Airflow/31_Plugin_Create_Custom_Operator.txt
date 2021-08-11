@@ -1,0 +1,157 @@
+Starting with the first component, in this lecture we will create our own custom operator.
+
+Guys Airflow provides you the ability to create new operators on top of Airflow that can help
+
+you to fulfil the requirements of your organization.
+
+And this extensible feature is one of the many reasons which makes Apache Airflow so
+
+powerful.
+
+In this lesson we will create a custom operator named ‘DataTransferOperator’ that will
+
+filter the content of a file and copy that filtered data to another file.
+
+If I can show you the source file.
+
+Here we have four lines written.
+
+What I want is from my custom operator is.
+
+It should read this file, remove some words from it which I would provide and write the
+
+remaining words in a new file.
+
+If the requirement is clear, Lets’ start building it.
+
+First of all, imports.
+
+I am importing the BaseOperator and log
+
+Then create a class
+
+DataTransferOperator
+
+this class should inherit the mandatory BaseOperator class.
+
+Every custom component that we create, should inherit its base class.
+
+And for operator, it is BaseOperator class
+
+Now inside this class, you can write your custom logic that you wish to get done when
+
+scheduler invokes this operator.
+
+Guys while creating any custom operators, there are two methods that you always need
+
+to override in the derived class - a constructor, and an execute method.
+
+Starting with constructor
+
+This is a constructor with its default parameters.
+
+basically constructor defines the parameters that you need to pass into this operator while
+
+you use it creating tasks in DAG file.
+
+For this DataTransferOperator, it would likely need three parameters, the source_file_path
+
+from where the data is to be copied, destination file path where data needs to be pasted, and
+
+the list of words that needs to filter out.
+
+Let’s quickly add them.
+
+these are the mandatory python args.
+
+in the definition of this constructor
+
+The main purpose of it would be to set the value of received arguments as instance
+
+variables for this operator.
+
+See, here we have self [dot] source_file_path equals the value got from the source_file_path
+
+parameter.
+
+Similarly, we have for the destination path and delete list.
+
+Okay, good till this.
+
+but we know every operator has some default arguments also attached to it like (task_id,
+
+instantiated dag object) or even few other arguments can be coming from DAG’s default
+
+dictionary like catchup, start_date, owner etc.
+
+For those arguments, we need to fill them with the default arguments using apply_de fault s
+
+decorator.
+
+So first of all import it. import apply_defaults and then use it above the constructor to decorate
+
+it.
+
+Alright, so with this our constructor for the custom operator is ready.
+
+As soon as this DataTransferOperator’s object will get invoked from DAG, this constructor
+
+will get triggered and set these parameter values.
+
+Constructor is done.
+
+The next, method to override is ‘execute method’.
+
+This is the method inside which you will write the logic for what your operator will do in
+
+its execution.
+
+So define execute and as the parameters put in self
+
+and context. This context parameter or the context dictionary you can say contains references
+
+to related objects to the task instance, like the necessary information about task and DAGs…
+
+Coming inside this method I will paste the complete code and then explain.
+
+This is a very simple code.
+
+So first of all putting the arguments in appropriate variables.
+
+Next step is done just for logging.
+
+It is an optional thing, you may skip it but it is a better practice to log as much you
+
+can while execution.
+
+Basically, log this message first, then print the source file path, the destination file
+
+path and the keywords that need to be filtered.
+
+Now the comes the primary thing.
+
+Open the source file.
+
+Open the destination file in append mode.
+
+Then using nested ‘for’ loop, for every line in the input file, replace every element
+
+of DeleteList with an empty string and write it to the output file.
+
+Simple.
+
+At last close the source and destination files.
+
+That’s it.
+
+Okay so the DataTransferOperator class is ready, last step is to add the DataTransferOperator
+
+class into our DemoPlugin.
+
+So inside this operators list
+
+Great!
+
+So finally, our DemoPlugin with a custom operator is ready.
+
+now we are all set to use it inside the DAG file which we will create in the next lecture.

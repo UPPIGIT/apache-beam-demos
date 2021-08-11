@@ -1,0 +1,1 @@
+LOAD DATA INFILE '/home/airflow/gcs/data/store_files/clean_store_transactions.csv' INTO TABLE clean_store_transactions CHARACTER SET 'utf8mb4' FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 ROWS;

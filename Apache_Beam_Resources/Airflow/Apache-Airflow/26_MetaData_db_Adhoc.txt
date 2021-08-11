@@ -1,0 +1,153 @@
+guys, we saw in the start of this course that Airflow has a shiny webserver connected
+
+with its metadata that hosts us a rich amount of log details with its different views.
+
+From there we can find a good amount of details about any task instance, dag instance, or
+
+information about their execution timings all this stuff.
+
+All you have to do is just click any of these views and you can find the details about that
+
+instance.
+
+Right.
+
+No doubt, that these views provide us a good amount of metrics, but… in real-time applications,
+
+these predefined filters seems to be lacking when you have to find some complex details
+
+about your workflows.
+
+For example, you may want to know which task in your workflow took more than say 5 minutes
+
+to complete or even more complex queries like what is the average task execution time
+
+of some xyz task, across the DAG runs between 10th Dec to 15th Dec.
+
+The question is from where and How exactly you will get the results of these queries.
+
+With these UI views, you are bound to the number of filters they provide.
+
+So welcome to this new topic where we will Continue with data profiling section and in
+
+this particular lecture, we will see how to query the Airflow metadata to fetch the result
+
+of those queries which are not directly populated in UI.
+
+For that first of all we should know about what all metadata Airflow stores and in what
+
+form.
+
+Guys as you know, we are using Postgres as backend, so obviously all the metadata would
+
+be stored in Postgres tables.
+
+Let’s check out what all metadata tables Airflow maintains.
+
+we are into the postgres database.
+
+To list the tables, type \dt.
+
+These many tables are stored in the backend.
+
+These are the tables responsible for any data which we see in the Airflow UI.
+
+We have ‘connection’ table in which all the connection details would be stored.
+
+Then we have ‘dag’ table that stores the data related to DAGs.
+
+Data like dag_id, its paused status, is it active or not etc. dag_run, log, sla_miss
+
+where any missed SLAs are stored, task_instance that stores the data related with tasks.
+
+likewise, we have many other tables.
+
+Let me open up the most important table in the list i.e. task_instace.
+
+why to see this blue screen when we have adhoc queries
+
+at our service.
+
+Go to UI.
+
+But before we can access the airflow database, I need to setup its connection.
+
+As of the now the connection is set it airflow_db for metadata database connection.
+
+If I open it, by default, this connection is set to MySQL.
+
+But since we are going to connect to Postgres metadata database so we need to change this
+
+connection with the Postrges values.
+
+The connection type will be Postrges, host would be postgres, schema would be airflow, login and password
+
+are again airflow, and the port is 5432.
+
+Done.
+
+Save it.
+
+Great, Airflow metadata connection is set to postgres.
+
+Back to data profiling - ad hoc queries.
+
+The first step was to select the database connection, airflow_db is already selected.
+
+Now we can run the SQL statements.
+
+Let’s first output all the dag runs.
+
+Tutorial dag had run 4 times so we got 4 entries here.
+
+With columns, dag id, execution date, start, run id and all this.
+
+Okay So drilling more into it, let me list the task instances . To list task instances, we have task_instance table, For for every task ran in
+
+any Dag, we have an entry of it in task_instance table with every bit of its run information
+
+stored.
+
+We got a number of columns associated with task instance table.
+
+We have Task id, its dag id, on which the task instance was created, start date, end date,
+
+for how long that task ran, on what host the task ran, then we have pool, queue, priority and the list continue.
+
+Guys, Airflow webserver would come to this task_instance table, select some of the columns
+
+from here and output the same in UI, but in some patterned and limited manner you would not get everything in the UI.
+
+But by providing access to these tables Airflow also allows us to fire custom queries according
+
+to your requirements and fetch the results.
+
+Suppose you want to list down the tasks of tutorial DAG that took more than 5 seconds
+
+to execute on 27th of December.
+
+All you have to do is just write the correct SQL statement and hit Run!
+
+So select * from task_instance where duration is greater than 5 seconds and
+
+let us check it for 26th, hit run
+
+Great, it has output the list of required task instances. 3 tasks have run time for more than 5 seconds.
+
+Similar to this, you can run any custom SQL query according to your specific needs.
+
+Adding more into it, guys after getting your filtered results, in case if you want to download
+
+those results into a file, then you can simply click on this .csv button and this table output
+
+will be downloaded locally on your system.
+
+Okay, so that’s how you can leverage ad-hoc queries to get your own filtered results from
+
+Airflow metadata.
+
+In the next lecture we will continue with Data Profiling and will add 1 more layer to
+
+it. Thank you.
+
+Thank you.

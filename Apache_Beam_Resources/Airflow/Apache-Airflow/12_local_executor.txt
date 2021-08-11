@@ -1,0 +1,279 @@
+Last we saw Sequential executor which was able to run only one task instance at a time.
+
+In this lecture we will discover Local executors which helps us in achieving the simultaneous
+
+execution of multiple tasks.
+
+Starting with its definition and some of its key points.
+
+A Local executor executes the tasks ‘locally but in parallel’.
+
+Where the term ‘locally’ means, all the tasks run on the same 1 machine where Airflow
+
+webserver, scheduler, and all other components are running.
+
+With Local Executor, a single Local worker is fully responsible for all task execution
+
+steps like picking up the jobs and runs them.
+
+And In order to run those tasks in parallel, it uses the multiprocessing python library
+
+and queues.
+
+To use local executor, we need to install a separate database like MySQL, or Postgres
+
+to handle the metadata, and that database should be installed in a separate instance
+
+other than Airflow.
+
+Guys it is very easy and straightforward to setup a local executor.
+
+Moreover, due to its cheap and resource light features, developers with reasonable number
+
+of resources prefer to use it.
+
+Even, we have been using it all the way long throughout this course.
+
+No doubt that local executor is easy and cheap to setup, offers parallelism but there are
+
+some drawbacks.
+
+You should consider them too before you incorporate them into field.
+
+Since local executor runs tasks locally i.e. on the same system.
+
+So this limits its capacity to the available resources on that local machine only.
+
+Whatever resources are present on that machine you have to satisfy with that.
+
+Using Local executor, you cannot scale it too far.
+
+Second, again since it is incorporated on a single machine, it makes the whole setup
+
+dependent on a single point of failure.
+
+If anything happens to the host machine, all your underlying tasks will halt.
+
+So theses were some pros and cons of Local executor.
+
+Now it’s time for practice.
+
+First thing first, in the docker compose file, change this executor Sequential value to ‘Local’.
+
+Save it and since our webserver is already running with Sequential executor, so we need
+
+to restart it all the services are down… run it again.
+
+Let’s once check in running Airflow configurations.
+
+LocalExecutor is running.
+
+In sql_alchemy_conn, for the local executor, it has changed to a Postrges values.
+
+Having said that, lets run the same DAG again.
+
+Please remember that in DAG definition, we don’t have any tasks dependencies so it
+
+is expected that all the 3 tasks should run parallelly.
+
+Go to the graph view.
+
+All tasks have completed their successful execution.
+
+In Gantt view, yes, here we can clearly see all the tasks has done a parallel execution.
+
+They all started at the same time.
+
+So that’s how a Local executor works.
+
+Adding on it, Guys we can make some changes in airflow.cfg file to make local executor
+
+incapable of running multiple tasks in parallel or even you can limit the task parallelism.
+
+We can do this by changing dag_concurrency’ property.
+
+in airflow.cfg file. Here we have dag_concurrency.
+
+It is By default set to 16.
+
+Actually, there is a subtle difference between parallelism and dag_concurrency and it is
+
+often confusing.
+
+Parallelism is the max number of task instances that can run concurrently on your whole “airflow set up.
+
+This means that across all running DAGs, no more than 32 tasks will run at one time.
+
+And dag_concurrency is the number of task instances allowed to run concurrently within
+
+a specific dag.
+
+So suppose, you have 4 dags each having 10 tasks running in parallel.
+
+If your parallelism is set to 32 then a total of 32 tasks would run in parallel and not
+
+40.
+
+And if dag_concurrency would have been set to 8 then within a Dag only 8 tasks would
+
+run in parallel and not 10.
+
+I hope it was clear.
+
+Coming back to our code, now in this code, suppose I am changing the DAG concurrency to 1,
+
+it means only one ta sk will run at a time.
+
+but again we have to mount this file with airflow container. So I have mounted
+
+this cfg file at this container address. And To make the changes effective, restart
+
+our services again. Run our DAG again.
+
+Only one task is pending. Yeah, it got succeeded.
+
+Going to the Gantt chart.
+
+You can see each task has run sequential execution as if they were run using sequential executor. This all happened because DAG concurrency was set to 1.
+
+Excellent so that’s it for local executor, I will see you in the next lecture.
+
+Last we saw Sequential executor which was able to run only one task instance at a time.
+
+In this lecture we will discover Local executors which helps us in achieving the simultaneous
+
+execution of multiple tasks.
+
+Starting with its definition and some of its key points.
+
+A Local executor executes the tasks ‘locally but in parallel’.
+
+Where the term ‘locally’ means, all the tasks run on the same 1 machine where Airflow
+
+webserver, scheduler, and all other components are running.
+
+With Local Executor, a single Local worker is fully responsible for all task execution
+
+steps like picking up the jobs and runs them.
+
+And In order to run those tasks in parallel, it uses the multiprocessing python library
+
+and queues.
+
+To use local executor, we need to install a separate database like MySQL, or Postgres
+
+to handle the metadata, and that database should be installed in a separate instance
+
+other than Airflow.
+
+Guys it is very easy and straightforward to setup a local executor.
+
+Moreover, due to its cheap and resource light features, developers with reasonable number
+
+of resources prefer to use it.
+
+Even, we have been using it all the way long throughout this course.
+
+No doubt that local executor is easy and cheap to setup, offers parallelism but there are
+
+some drawbacks.
+
+You should consider them too before you incorporate them into field.
+
+Since local executor runs tasks locally i.e. on the same system.
+
+So this limits its capacity to the available resources on that local machine only.
+
+Whatever resources are present on that machine you have to satisfy with that.
+
+Using Local executor, you cannot scale it too far.
+
+Second, again since it is incorporated on a single machine, it makes the whole setup
+
+dependent on a single point of failure.
+
+If anything happens to the host machine, all your underlying tasks will halt.
+
+So theses were some pros and cons of Local executor.
+
+Now it’s time for practice.
+
+First thing first, in the docker compose file, change this executor Sequential value to ‘Local’.
+
+Save it and since our webserver is already running with Sequential executor, so we need
+
+to restart it all the services are down… run it again.
+
+Let’s once check in running Airflow configurations.
+
+LocalExecutor is running.
+
+In sql_alchemy_conn, for the local executor, it has changed to a Postrges values.
+
+Having said that, lets run the same DAG again.
+
+Please remember that in DAG definition, we don’t have any tasks dependencies so it
+
+is expected that all the 3 tasks should run parallelly.
+
+Go to the graph view.
+
+All tasks have completed their successful execution.
+
+In Gantt view, yes, here we can clearly see all the tasks has done a parallel execution.
+
+They all started at the same time.
+
+So that’s how a Local executor works.
+
+Adding on it, Guys we can make some changes in airflow.cfg file to make local executor
+
+incapable of running multiple tasks in parallel or even you can limit the task parallelism.
+
+We can do this by changing dag_concurrency’ property.
+
+in airflow.cfg file. Here we have dag_concurrency.
+
+It is By default set to 16.
+
+Actually, there is a subtle difference between parallelism and dag_concurrency and it is
+
+often confusing.
+
+Parallelism is the max number of task instances that can run concurrently on your whole “airflow set up.
+
+This means that across all running DAGs, no more than 32 tasks will run at one time.
+
+And dag_concurrency is the number of task instances allowed to run concurrently within
+
+a specific dag.
+
+So suppose, you have 4 dags each having 10 tasks running in parallel.
+
+If your parallelism is set to 32 then a total of 32 tasks would run in parallel and not
+
+40.
+
+And if dag_concurrency would have been set to 8 then within a Dag only 8 tasks would
+
+run in parallel and not 10.
+
+I hope it was clear.
+
+Coming back to our code, now in this code, suppose I am changing the DAG concurrency to 1,
+
+it means only one ta sk will run at a time.
+
+but again we have to mount this file with airflow container. So I have mounted
+
+this cfg file at this container address. And To make the changes effective, restart
+
+our services again. Run our DAG again.
+
+Only one task is pending. Yeah, it got succeeded.
+
+Going to the Gantt chart.
+
+You can see each task has run sequential execution as if they were run using sequential executor. This all happened because DAG concurrency was set to 1.
+
+Excellent so that’s it for local executor, I will see you in the next lecture.

@@ -1,0 +1,165 @@
+Welcome guys, in this lesson we will learn about ‘Pools’ - an Airflow concept that
+
+helps you limit the execution parallelism on arbitrary sets of tasks.
+
+So as you know, when a DAG is run, Airflow scheduler assigns a ‘certain number of workers
+
+slots’ for each task in your DAG and those workers will perform the actual task processing.
+
+Now depending upon the number of resources your system have, some systems can get overwhelmed
+
+when too many processes hit them at the same time.
+
+Let me explain a scenario.
+
+Suppose, you have 5 Dags with each DAG having 10 parallel running tasks in it and a total
+
+of 10 workers have to execute those tasks.
+
+Now it is more than possible that out of 5, your 2 DAGs occupy all the 10 workers and
+
+the remaining 3 DAGs won’t even start until the workers are freed from other tasks.
+
+In such kind of situations, where tasks start fighting for workers can lead your Job to
+
+crash.
+
+Problem it is.right?
+
+To avoid such happenings, Airflow uses the ‘Pools’ concept; with help of which you
+
+evenly distribute the available workers so that all tasks can have their share of it.
+
+Now telling you the basic idea of using Pools.
+
+Guys Pool is basically a set of arbitrary number of workers which can be assigned to
+
+any of the tasks.
+
+So in this example only what we can do is, we can create 3 pools with this distribution
+
+of workers and then assign these pools to any of those 50 tasks.
+
+Tasks assigned to a pool can only utilize the resources available in that pool and cannot
+
+share the workers of other pools which prevents our tasks fighting over workers to some extent.
+
+If you got the concept then let’s hop to UI and create some pools.
+
+Pools can be easily managed in the Admin section.
+
+This is the default single pool which has 128 slots.
+
+Let’s create one.
+
+Click on this ‘create’ we have three input fields.
+
+First, we have Pool name.
+
+let’s set this pool name to pool_1.
+
+Next are the Slots, these are the number of workers that you want to assign to this pool.
+
+Let’s set it to 3.
+
+Next, we have the optional pool description, to provide any tag to this pool.
+
+I will keep it empty.
+
+And save it.
+
+Same like, this I will create 1 more pool.
+
+Great, with this we have created 2 pools.
+
+One having 3 slots and other having only 1 slot.
+
+Since we have not assigned any task with this pool and our worker slots are not currently
+
+being used, so we have 0 ‘Used Slots’ and 0 ‘Queued Slots’.
+
+Now let’s assign our pools to our DAG tasks.
+
+I have created a very simple DAG as an example having 4 tasks, where each task runs a Bash
+
+command to sleep for 5 seconds and there are no task dependencies.
+
+Also notice that I have passed a new parameter ‘pool’ to each of the tasks.
+
+As a value of it, pass the pool-name.
+
+tasks t1 and t2 are assigned to pool_1, whereas, t3 and t4 are assigned to pool_2.
+
+Enable and trigger the DAG.
+
+Ok see, first 2 tasks are being run by pool_1 since it has 3 slots in it, but pool_2 has
+
+only 1 slot so it can run only 1 task.
+
+All tasks completed successfully.
+
+To get acknowledgement of what tasks were run from which pool, you can check for it
+
+logs.
+
+Here search for pool.
+
+task t1 should have been run by pool_1.
+
+Yes it is.
+
+We can also check for t4. It should be run by pool 2.
+
+Yes, it is.
+
+Let’s do one change…
+
+lets take back all the slots from pool_2.
+
+.
+
+Now I will again trigger the DAG
+
+Refresh. See, t1 and t2 ran successfully and t3 and t4 did not.
+
+Even though pool_1 workers are available now but t3 and t4 cannot use pool 1’s slots, hence
+
+these tasks are not running.
+
+That’s how Airflow pool works.
+
+Only assigned number of workers a task can utilize within a pool.
+
+One thing I would like to add here, we can use 1 pool parameter priority_weight’ while
+
+defining tasks.
+
+Where Priority Weight as the name suggests, defines the priorities for a task in the queue.
+
+Suppose you have few tasks waiting to get hold on the workers.
+
+By setting the priority weight you can define which tasks to get executed first as the slots
+
+open up in the pool.
+
+The default priority weight for tasks is 1.
+
+But you can set the priority weight to any number.
+
+Higher the priority number, first it will get hold of worker slots.
+
+So in here, for the demonstration, first of all let me change this pool again to 1 slot. Now in the code, let us assign,
+
+Save it. Yeah, now if I set the priority_weight of task t3 to 2.
+
+Now what will happen is since pool_2 has only 1 slot in it and priority_weight of t3 is
+
+high so this time instead of task t4 running first, task t3 will be executed first.
+
+Let us see.
+
+Yeah see first 2 tasks are running in pool_1 and pool_2 is running task t3 and not t4 because task t3 has more priority.
+
+So that’s it for this lecture.
+
+See you in next.

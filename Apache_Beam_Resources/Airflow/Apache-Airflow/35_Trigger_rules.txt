@@ -1,0 +1,137 @@
+Let us discuss about an exclusive feature of Airflow i.e.
+
+‘Trigger rules’.
+
+I will directly start with explaining a scenario.
+
+Consider this DAG with dag_id ‘trigger_rules’.
+
+Inside it we have 4 simple tasks – print current date, sleep for 5 seconds, check_file_exists
+
+which uses a file sensor to check for a file (test.py) in dags folder and last final_task
+
+just prints ‘done’ and the operator relationships is defined like this.
+
+tasks t1, t2, and t3 are put in list means they have no dependency amongst each other
+
+and task t4 is set after the list.
+
+This is the graph view of it for better visualization.
+
+Okay.
+
+Now guys by default, according to the Airflows’ normal execution behaviour, we all know that
+
+this final_task will run only after its upstream 3 tasks should run successfully.
+
+Right.
+
+This is a generic kind of operator relationships we have been doing so far.
+
+But this kind of dependencies does not fit to every use case.
+
+Like consider an example where you have say 5 independent tasks that download something
+
+from servers and at task t6 you send an intimation email.
+
+Now your requirement is that if any of the download gets completed you can send the email.
+
+If you would apply the basic operator dependencies, then you could only send the email after all
+
+the 5 tasks have completed and not after the individual ones.
+
+So how will you fulfil this kind of dependencies in your DAG.
+
+The answer is, Airflow has provided us a method called trigger_rules using which we can handle
+
+these kinds of complex dependencies in our DAGs.
+
+trigger_rule is basically an argument that we can pass in any operator and can define
+
+a criteria when that operator will run.
+
+In this scenario, we can add a trigger_rule argument at task t6 , and inside trigger_rule
+
+we can define a criteria that t6 should run when 1, many or any of its upstream tasks
+
+have successfully completed, failed, skipped or any other status.
+
+To understand its functionality more clear,
+
+let’s implement a trigger_rule in this example.So here in the child task t4
+
+I will add ‘trigger_rule’ and set its value.
+
+Let’s try with ‘one_success’ From the name itself, it is clear that task
+
+t4 will fire as soon as at least one parent task succeeds.
+
+Save it and run it in browser. as you can see, as soon as task print_date
+
+gets succeeded, the final_task got queued and did not wait for all parents
+
+to be done.
+
+Now Let’s try one more rule . Let us pass here all_success. This would require all upstream tasks to succeed to trigger t4.
+
+so first two tasks ran successfully but task t3 check_file_exists failed as there is no
+
+such file named test.py in dags folder which makes their child task t4 to fail with ‘upstream_failed’
+
+state as this time trigger_rule was set to all_success so it required all the three tasks to be completed successfully.
+
+FYI, each operator have a trigger_rule argument associated with it, whether you explicitly
+
+define it or not and by default its value is ‘all_success’ which makes the child
+
+task run only when all its parents have succeeded.
+
+Let’s try one more rule… ‘all_done’.
+
+all_done, will run the child task soon after all parents are done with their execution
+
+with any status.
+
+I repeat with any status, Means it is not concerned with which statuses the parent tasks
+
+got completed, It may fail or succeed.
+
+Doesn’t matter.
+
+Save it.
+
+refresh the DAG and t rigger.
+
+Even though task check_file_exists failed, still task t4 final task ran.
+
+Guys similar to this we have few more trigger_rules values that you can provide in this parameter.
+
+They are ‘all_failed‘ which will run the child
+
+task if and only if its all parents are in failed or in upstream_failed state.
+
+Next, we have ‘one_failed’.
+
+one_failed fires the task as soon as at least one of its parents has failed.
+
+It does not wait for all parent tasks to get failed.
+
+‘none_failed’ as the name implies, none_failed run only those tasks whose all parents have
+
+not failed or upstream_failed i.e., to run the child task, all parents have to be either
+
+in ‘success’ or ‘skipped’ status.
+
+‘none_skipped’ it run the tasks who have no parent that is in a skipped state.
+
+To run the child task, all parents can have a ‘success’, ‘failed’, or ‘upstream_failed’
+
+state but not ‘skipped‘ one.
+
+Last is ‘dummy’ in which dependencies are put down just for show case, and can be triggered
+
+at its will.
+
+Alright, so that was how you can handle more complex dependency settings in your DAGs using
+
+trigger_rules, see you guys in next class.

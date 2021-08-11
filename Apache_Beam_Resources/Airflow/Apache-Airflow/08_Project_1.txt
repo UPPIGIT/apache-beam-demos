@@ -1,0 +1,118 @@
+Welcome guys to this section.
+
+Now that we are well familiar with basics of Airflow, and we also understand how a basic
+
+DAG looks like.
+
+So, I believe from this point, we can start creating our own DAG applications.
+
+What I am to going to build next will be a small Airflow application using which we will
+
+automate various tasks in of an ETL pipeline.
+
+So you can consider this section as our 1st Airflow project.
+
+Okay so first thing first, let’s get a picture of what our application requirements are.
+
+We have a retail store client which has number of store outlets located at different locations.
+
+From the transactions happening in various stores, company wants to get ‘daily profit
+
+reports’ on how its stores are performing in market.
+
+As an input, daily we are given a raw CSV file containing the transaction data of all
+
+stores.
+
+Going through it, each row in the file represents a single transaction happened in any of the
+
+stores.
+
+Talking about its columns.
+
+First is ‘STORE_ID’ which is unique for each store.
+
+Then is ‘STORE_LOCATION’.
+
+Please note that, in some of the rows, these locations have some unwanted special characters
+
+appended with them, like this has an open bracket, this has some addition sign, exclamation and so on.
+
+So we have to remove these in our Job.
+
+Next, we have the ‘PRODUCT_CATEGORY’ of sold product.
+
+electronics, kitchen, furniture…. are some of the categories.
+
+Then ‘PRODUCT_ID’ of sold product.
+
+Product’s ‘MRP’ in dollars.
+
+Here also, we have $ sign before the price.
+
+We would need to remove this dollar sign too to perform any mathematical operations on
+
+this column.
+
+And then this column is the cost price ‘CP’ - the price at which store bought that product.
+
+‘DISCOUNT’ given on that sale.
+
+Second Last is the actual selling price ‘SP’ at which the store has sold the product to a customer.
+
+Where selling price = MRP – Discount.
+
+Last is the date on which the transaction happens. This is the daily data so this date would be same per file.
+
+So guys, from this data client wants us to generate daily reports, highlighting
+
+Out of all locations, which location has made the highest profit and also the profit of
+
+each individual stores.
+
+Fine so… those were the client requirements in their business language.
+
+Now talking in context to Airflow.
+
+Since a DAG is all about tasks.
+
+Let’s first break it into individual tasks.
+
+guys since this is a kind of ETL application.
+
+So, if we split the tasks at very high level, our first task would be to read and clean
+
+the input file, clean as-in to remove those unwanted characters from data.
+
+Next, we will store the cleansed data into some database (I will use MySQL) and then
+
+from that database table, we will apply aggregations as per the client’s requirements in form
+
+of sql queries.
+
+We have two use cases here- - Store wise profit and Location wise profit.
+
+The resultant output of this phase we will load into CSV files
+
+and as a last step, we will e.mail it to company's e.mail id.
+
+Right?
+
+Actually, this is a high-level bifurcation of tasks but when we write DAG for it, we
+
+will include some more tasks for basic validations and file transfers.
+
+And yes, please understand, every day, we will be receiving and processing the data
+
+of its previous day.
+
+So if today is 4th December then we will be getting the transactional data of 3rd December
+
+in the input file and processing the same.
+
+Cool!
+
+Now having our project requirements and architecture clear, let’s put our self in the developers’
+
+shoes and start creating the required scripts.
+

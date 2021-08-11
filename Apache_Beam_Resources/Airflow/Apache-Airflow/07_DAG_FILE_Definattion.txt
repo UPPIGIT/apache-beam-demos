@@ -1,0 +1,409 @@
+Welcome to this lecture.
+https://airflow.apache.org/docs/apache-airflow/stable/tutorial.html
+
+
+In the last few lectures we ran ‘tutorial’ DAG blindly on Airflow webserver without knowing
+
+what’s actually written in it.
+
+But in this lecture, I will walk you through this tutorial DAG file, side by side
+
+explaining you some of the fundamental Airflow concepts and their usage that helps in building
+
+our pipeline.
+
+Okay so, lets dive into the DAG file.
+
+These are the few lines of code with virtue of which we got a DAG named ‘tutorial’
+
+in UI.
+
+Before starting, let me put one thing very clear.
+
+Sometimes students take DAG definition file as a place where they can write some actual
+
+data processing logics, but that’s not the case at all!
+
+The purpose of a DAG file is just to define a DAG object which will configure all the
+
+settings for your data pipeline, settings like - when to start or execute the workflow,
+
+should it retry, if so, how many times it should retry, task dependencies, and all.
+
+In short, this python script is just a configuration file, that specifies the DAG’s structure
+
+as a code.
+
+It doesn’t have to do anything with data processing logics.
+
+Now let us go through this code line by line.
+
+First things first, since it is a python script, import the pre requisite python libraries that
+
+it will need.
+
+First, we are importing DAG from airflow.
+
+We will need this module to instantiate a DAG.
+
+Next, we have imported an operator.
+
+In this basic example, since we are dealing with the bash commands like print date and
+
+all, that’s why we have imported the relevant operator… a bash operator to carry out those
+
+tasks.
+
+Guys this is a very basic pipeline, so we have imported only one operator here, but
+
+yeah, as the complexity of your pipeline will increase, eventually, you will need to add
+
+more operators here.
+
+Next to specify various timings like schedule interval, start date, end date we have imported
+
+python datetime and timedelta libraries.
+
+After the import , it has a dictionary of arguments, that will be applicable to all
+
+operators that are defined in this DAG, unless you override them.
+
+Coming inside the dictionary, first, we have the ‘owner’ name, which is ‘airflow’.
+
+Next we have a key ‘depends on past’, set to ‘false’.
+
+Depends_on_past is a boolean field, that specifies whether a task in current DAG depends on the
+
+successful completion of the corresponding task in older DAG runs.
+
+So suppose, in our example templated task failed in yesterday’s DAG run.
+
+If this field Depends_on_past is set to true it will not allow templated task from getting
+
+triggered today.
+
+If it set to false then there will be no such task succeed dependency.
+
+Then is ‘start date’.
+
+We have already seen its use in the previous lectures.
+
+Start date decides a date time from when the scheduler will plan its execution.
+
+Next these few fields are relative to ‘email’.
+
+Airflow lets you to send th e alert emails, if any of the tasks from your pipeline is
+
+failed, or retried.
+
+You can setup those email settings here in email on failure’ and ‘email on retry’.
+
+Currently it is set to a false value, so it will not send any such emails.
+
+But yeah, if we configure the SMTPs and set this to ‘true’ then it will send the relevant
+
+emails to this particular address.
+
+Next is the number of ‘retries’.
+
+This again is a salient feature of Airflow.
+
+The number of retries specifies how many times the task should be retried in case it fails.
+
+Then we have directive related to the retries, it is – ‘retry delay’, retry delay sets the
+
+time gap between retries.
+
+It decides after how much time the failed task should be retried.
+
+In this case any failed task will be retried after 5 minutes.
+
+Then we have some properties commented out.
+
+Like pool, priority weight, which we will discuss as we go along with this course.
+
+No need to go through them at this moment.
+
+Having set the default_args dictionary, next is a very important step, instantiating a
+
+DAG object.
+
+we will use the DAG object that we imported and will nest our tasks into this DAG object.
+
+As the parameters, the first parameter is always a string representing the DAG ID
+
+which serve as a unique identifier for this DAG.
+
+Next parameter is the default argument dictionary.
+
+Passing that dictionary here while instantiating DAG will pass all the dictionary arguments
+
+to each of the task constructor that are defined next.
+
+Last parameter, is the schedule interval that sets the time interval after which this DAG
+
+will be executed again.
+
+We have set it to 1 means tutorial DAG will run every day.
+
+Guys here you can pass any intervals like hourly, daily, weekly or any particular date
+
+time depending on your application needs.
+
+Please note that in this DAG, only three parameters are passed – DAG id, default arguments and
+
+schedule interval.
+
+But in your application, you can pass even more parameters like DAG description, or sometimes
+
+if you have not specified any default argument dictionary, then you can pass those properties
+
+here one by one.
+
+I am attaching a link in the resources tab where you can find a full list of parameters
+
+that can be passed to a DAG.
+
+Alright, so with this, our DAG object is all set to go.
+
+Now let’s move on to the task creation part.
+
+This is the part where we actually define our tasks.
+
+What actually you want to run or schedule is specified as tasks.
+
+Guys when we ran this DAG in UI, we saw it had three tasks - ‘print date’, ‘templated’
+
+and ‘sleep’.
+
+This is the part of code from where those tasks came from.
+
+Like I mentioned in the basic terminologies lecture that tasks are generated after an
+
+operator is instantiated.
+
+So here we are associating so me operator with this task.
+
+So this is first task defined t1.In first task,our job is to execute a bash command which prints current date so
+
+that’s why we are assigning a BashOperator here.
+
+But say if you were calling a python function here then you would have to use PythonOperator,
+
+if your task would have been of sending an email then use EmailOperator.
+
+Apache Airflow supports a number of operators that you can choose from, for which we have
+
+a full section coming next. So please wait till that.
+
+As its arguments, the first mandatory argument is ‘task id’ for a task.
+
+If you remember this was the task name shown in UI.
+
+Same like DAG ID, task id acts as a unique identifier for each task.
+
+Next is the actual command or script that is going to run as part of this task.
+
+In this example we are just running a bash command to print date time.
+
+Last argument is the instantiated dag itself task.
+
+This was all for task 1.
+
+Then ‘t2’ , is also same as like t1.
+
+This is Task id is ‘sleep’ and as a bash command it will make the execution sleep for 5 seconds,
+
+nothing else.
+
+But here you can see, for task 2, the number of retries is explicitly passed.
+
+The creator of this DAG has passed this argument explicitly just to show you that though every
+
+argument defined in that dictionary will be applicable to this task but this number of
+
+retries ‘3’ will override the number of retries defined in the default dictionary.
+
+So for the task t1 number of retries will be 1 but for t2 it would be 3.
+
+Same like this, you can override any of the dictionary arguments in any of the task definitions.
+
+Next task t3 is quite different from these two tasks.
+
+As in for task t3 ‘Jinja template’ has been used.
+
+Guys Airflow leverages the power of Jinja Templating for passing a dynamic information
+
+into task instances at runtime.
+
+Where Jinja is a modern web template for the python programming language used for outputting
+
+formats such as HTML.
+
+In t3, task id is templated.
+
+But for the bash command a variable ‘templated_content’ is passed.
+
+Now coming to this variable, this is how a Jinja template looks like.
+
+Some of you may know this syntax, it’s quite simple.
+
+Basically in Jinja Templating we define the code logic inside these ‘curly braces and
+
+a ‘percentage’ sign.
+
+So as per this code.
+
+A ‘for’ loop will run 5 times.
+
+Each time printing date -- ds stands for datestamp, adding 7 days into the current date
+
+stamp.
+
+And last last printing a user defined parameter passed from here i.e. this line ‘Parameter
+
+I passed in’.
+
+Guys these variables and macros comes out of the box with Airflow.
+
+There are number of variables and macros out there.
+
+For your reference I have attached a link in ‘Resources Tab’ of this video, you
+
+can visit there and can get a list of available variables and macros.
+
+Alright, so with this we have defined three tasks and they are all set to run.
+
+But we are forgetting 1 important thing, setting the dependencies amongst the tasks is pending.
+
+Actually in our current example, since all the tasks are related to some print commands
+
+with no dependency on each other, so we kind of can skip setting dependencies but yeah,
+
+this thing will become crucial in any ETL pipeline, there you will always need to run
+
+the extraction task first then the transformation following with loading task.
+
+In that case you definitely need to set the task dependencies.
+
+So even though our tasks are independent here but still I will add some dependencies in
+
+them for learning purposes.
+
+Now guys there are two type of dependencies – upstream, and downstream.
+
+You can set these dependencies either syntactically by set_upstream, set_downstream or through
+
+python bitshift operators.
+
+Here the dependencies are set syntactically.
+
+So t2.set_upstream t1 means that task t1 needs to complete first then only task t2 will start,
+
+in other words you can say, task t2 is dependent on t1 and will run only after the ‘successful’
+
+completion of task t1.
+
+Similarly, task t3 will run only after the successful completion of t1.
+
+If we would have used set_downstream here then it would have been opposite.
+
+Then t1 would be dependent on both the tasks.
+
+Also observe that there is no such dependency between task t2 and t3.
+
+Any of them can run after T1 or they can even run in parallel.
+
+Good so far. so that’s how a very basic DAG file is written.
+
+Now that we have knowledge of DAG file, let us run it one more time w.r.t to our learning of it.
+
+
+DAG Properties:
+
+https://airflow.apache.org/docs/apache-airflow/stable/_api/airflow/models/dag/index.html
+
+Macros:
+
+https://airflow.apache.org/docs/apache-airflow/stable/macros-ref
+
+
+
+Dag file execution-------
+======================================
+
+Open up the graph view.
+
+We have print date, sleep, and templated tasks.
+
+BashOperator we used in DAG file.
+
+Refresh the page again.
+
+All tasks have successful completed.
+
+Now let’s quickly see the logs for each task and see their outputs.
+
+Now since we know about the DAG, it would be quite easy for us to understand this log.
+
+First for print date.
+
+‘starting attempt 1 of 2’.
+
+So there would be total 2 attempts – 1 attempt that the scheduler will make by default plus,
+
+the number of retries we specified in DAG definition file which was 1.
+
+And these are the logs for the first attempt.
+
+See, Its output is here.
+
+It has printed date time (in UTC).
+
+That was for the print_date logs.
+
+And since our task has executed successfully in the first attempt so there are no logs
+
+for attempt 2.
+
+Go to the sleep task.
+
+For this task there is a difference in number of attempts, in this case the total attempts
+
+are 4, which I guess all of you would have probably remember.
+
+We had explicitly overridden the retries of this task to 3, so 3 plus 1 default attempt
+
+comes out to 4.
+
+Its output will show nothing.
+
+But at the timestamp you can see, we have 5 second difference between the times when
+
+the command was started and when it finished.
+
+Last open templated task where we used Jinja templates.
+
+In Jinja template we had a ‘for’ loop of 5.
+
+Here is the output for the same.
+
+Execution date, 7 days added in the execution date and then user defined parameter – ‘Parameter
+
+I passed in’.
+
+Great, So guys, in this lecture we learnt how a DAG definition file looks like, what
+
+are its components.
+
+We learnt how DAG is instantiated, how tasks are created by assigning relevant operators
+
+to them and setting dependencies amongst them.
+
+This was the brief idea of how a DAG file is written.
+
+In upcoming lectures, we will create our own DAG files from scratch as per our use case.
+
+
+
+

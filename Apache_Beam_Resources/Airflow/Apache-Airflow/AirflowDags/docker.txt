@@ -1,0 +1,17 @@
+  126  sudo docker -f docker-compose-LocalExecutor.yml up -d
+  127  sudo docker-compose -f docker-compose-LocalExecutor.yml up -d
+  128  sudo docker ps
+  129  sudo docker exce
+  130  sudo docker run  exce
+  131  sudo docker run  exce -it  aa36c37b651c bash
+  132  sudo docker exce -it  aa36c37b651c bash
+  133  sudo docker ps
+  134  sudo docker exec -it aa36c37b651c bash
+  135  ls
+  136  cd dags
+  137  ls -lrt
+  138  docker ps
+  139  sudo docker ps
+  140  sudo vim assignment_1.py 
+  141  sudo docker cp assignment_1.py aa36c37b651c:/usr/local/airflow/assignment_1.py
+  142  history

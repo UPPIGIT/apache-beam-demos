@@ -1,0 +1,225 @@
+https://airflow.apache.org/docs/apache-airflow/stable/_api/airflow/hooks/index.html
+
+
+Welcome students, in this video we will learn about one more advanced and powerful feature
+
+of Apache Airflow called Hooks.
+
+So what are hooks in Airflow?
+
+A hook is an object that embodies a connection to a remote server, service or platform.
+
+Basically, they are the interfaces that help you to interact with external platforms and
+
+databases like Hive, S3, MySQL, Postgres, and others without using their built-in operators.
+
+And Mainly they are used to transfer data between tables.
+
+No doubt, you can transfer data between tables using the corresponding operators of a database,
+
+but it requires implementing different functions ourselves like for example for checking for
+
+new data.
+
+Airflow had already done all this implementation in Hooks.
+
+No need of any extra functions.
+
+Just create the connections and transfer data.
+
+Hooks implement a common interface for the external platforms and they itself act as
+
+the building blocks for the operators.
+
+They internally use the ‘Connections’ model to retrieve hostnames and authentication
+
+information and keeps the authentication code and information out of pipelines and store
+
+it in centralized metadata database.
+
+After establishing the connection with external databases, it will allow you to work in the
+
+respective database CLI and you will get a feel, if you are logged into that database’s
+
+CLI only.
+
+Airflow provides you with a number of Hooks to connect with different
+
+external platforms like let say if you wish to connect with S3, then you can use S3Hook,
+
+similarly for MySQL it has MySQLHook, for Postgres it has PostgresHook, and the list
+
+continues.
+
+Guys you can find a complete list of available hooks at the link I have attached in the resources
+
+tab of this lecture.
+
+Okay so that was just an overview of hooks, let’s see how we can use the hooks in our
+
+DAG.
+
+As an example we are gonna use hooks to copy data from one Postgres table to another Postgres
+
+table using PostgresHook..
+
+Let’s get started.
+
+As a first step, let me first create the source and target tables.
+
+Go to the PowerShell.
+
+And open the Postgres in command line.
+
+So we are in at the root of Postrges container.
+
+Type psql and then the username ‘airflow’.
+
+Cool so we are into the Postrges CLI.
+
+To list out all the tabl es type \dt.
+
+These are the default tables present in it
+
+Let me create Source and target tables here.
+
+I will run these basic create and load queries.
+
+Create source table.
+
+Now insert data into it.
+
+Select * from tablename.
+
+Yes data is loaded.
+
+Now create target table.
+
+Good. Both the tables are created.
+
+Let us now see how by using hooks, we can transfer data from source to target table.
+
+Here we have the complete DAG for it.
+
+Starting with, we have imported DAG and other routine things.
+
+The new thing we have imported this time is a PostgresHook to interact with external Postgres
+
+database.
+
+Then as usual, we have a dictionary of default arguments with owner airflow, start date and
+
+number of retries is set to 1.
+
+DAG is instantiated with ‘hooks_demo’ id then default arguments of dictionary and it is
+
+set to run daily.
+
+This DAG is comprised of a single task with task_id ‘transfer’ which calls a python_callable
+
+function ‘trasnfer_function’ defined above.
+
+Please notice that we have set the provide_context property to true.
+
+Now comes this important function which is actually copying the data from one table to
+
+another.
+
+Guys in this whole DAG code you can nowhere see any PostgresOperator getting used to connect
+
+Postgres database.
+
+Rather we have defined a single python function in which we are using PostgresHook to connect
+
+and work in Postgres environment.
+
+So coming inside the function, first we have stored a SQL statement in a variable named
+
+query – ‘select all from source_city_table’.
+
+Then to connect and access both the tables, First we are creating a PostgresHook class
+
+object in which postgres_connection string and schema for this DB which is ‘airflow’
+
+is passed, this connection we are going to create in a moment.
+
+On that object we are applying get_conn method of PostgresHook class to store the connection
+
+in ‘source_conn variable.
+
+That is for source table connections and the same is done for target table.
+
+Now before processing further let me create these connections too.
+
+I believe you all might have guessed where we will go to create this connection as you
+
+have already seen that screen in previous lecture.
+
+It would be in connections in Admin tab.
+
+Click on Create Connection id is postgres_conn (this is the
+
+id that we mentioned in PostgresHook arguments), connection type is postgres, host name postgres,
+
+schema airflow, and fill login and password to airflow.
+
+The port is 5432 save it.
+
+great!
+
+Our Postgres connection is successfully created .and with this, we can now connect with Postrges
+
+database from DAG file.
+
+Coming back to DAG, next is some Python stuff, where we are using the Python cursors to execute
+
+our query.
+
+Those who don’t know, Python’s cursor class allows Python code to execute PostgreSQL
+
+command in a database session.
+
+This cursor helps in maintaining the connection with database and will read the results of
+
+select query a few rows at a time in a batch.
+
+This basically prevent any large data selection and will select few records a time.
+
+Since we need to apply sql query on both the tables so used cursor on both the source and
+
+target connections.
+
+And as a 1st step of execution, execute the first query which is select * from source
+
+table.
+
+The records fetched from, select query we are storing them in ‘records’ variable.
+
+And then an if statement, if records are present, insert those rows into target table by execute_values
+
+method which comes under this package imported here.
+
+Guys this is an industry accepted procedure to transfer data
+
+using execute values method as it helps us to insert
+
+the whole batch at once and not one row at a time.
+
+After the successful copy we are committing the changes in target.
+
+Finally, at the end of the transfer, we are closing any source or destination connections.
+
+With this our DAG definition is complete and we can trigger this DAG.
+
+Excellent our DAG has executed successfully.
+
+Open the task logs.
+
+The message ‘Data transferred successfully!’ is printed in the logs.
+
+Cross check the results in CLI.
+
+Excellent we have successfully copied the records from one table to another using Airflow
+
+hooks.
+

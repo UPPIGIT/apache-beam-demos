@@ -1,0 +1,192 @@
+https://airflow.apache.org/docs/apache-airflow/stable/_api/airflow/sensors/index.html#airflow.sensors._sensors
+
+So guys, till now we have used different operators for carrying out different type of tasks.
+
+We have used BashOperator to run bash command, a MySQLOperator to work with MySQL database,
+
+and similarly there are other operators for other specific jobs.
+
+Now the thing with operators is, if we take an example of our project only.
+
+Our whole DAG was completely dependent on the arrival of input ‘raw_store_trasncations.csv’
+
+file.
+
+Right?
+
+Now suppose on one day, the input is delayed and did not arrive before
+
+the DAG’s scheduled run time.
+
+Then what will happen?
+
+Our task t1 that checks if the file is present or not will fail, leaving your whole DAG with
+
+a ‘failed’ status.
+
+Right?
+
+Bad luck is, when the file is just few minutes or even seconds late, the task t1 will fail,
+
+leading to a whole Job failure.
+
+No doubt, you could have specified some number of retries which infact we had done already
+
+to check the file arrival but using Bash operator is not the best approach to do such type of
+
+checking.
+
+Moreover, this is not only 1 situation, there are a number of scenarios where your task
+
+needs to wait for some event to happen’.
+
+Like you may have a task that requires to wait until the data at some table arrives,
+
+or you may have a job that needs to wait if certain time has elapsed... like this there
+
+can be many more use cases.
+
+Generalising it, I would say, there are some situations where our tasks need to wait ‘until
+
+a certain event happens’.
+
+So the question is… what is the best airflow approach to instruct a task to wait until
+
+a certain criterion is met inside the DAG definition?
+
+Airflow has a component especially designed to handle these such situations.
+
+This ‘component is called ‘Sensor operators.
+
+Sensor operators, as the name is suggesting, are special operators that keeps on waiting
+
+for an event to happen.
+
+And if that condition is met, only then they are marked as completed and otherwise, they
+
+will wait for some time in a hope to get that required condition met.
+
+These operators will keep on retrying after a set interval of time and check if the event
+
+had occurred or not.
+
+There are a number of sensor operators out there for different use cases.
+
+We have a filesensor which waits for a file to arrive in some directory.
+
+If your task needs to wait for some time, then Airflow has a TimeDeltaSensor for it.
+
+Or if you are dealing with SQL, then you can use SqlSensor, for S3 you have S3 sensors.
+
+Similarly, there are few other sensor operators available, you can use them depending upon
+
+your job requirements.
+
+All these Sensor operators are derived from BaseSensorOperator class and inherit its attributes.
+
+I have attached a link to the sensor operators which you can follow and can get a complete
+
+list of available sensors.
+
+Now talking about some key terms or parameters for sensor operators.
+
+The time for which the sensor operator should wait for the next retry is set as ‘poke_interval’;
+
+defined in seconds.
+
+So suppose you have specified a poke_interval of 5 seconds, then, if the event doesn’t
+
+happen at the first try, sensor operator will keep on trying after every 5 seconds till
+
+the event happens.
+
+And how long should the sensor operator should keep on retrying can be passed as ‘timeout’
+
+parameter.
+
+Timeout is the maximum period of time, in seconds, till which your task will be poked
+
+before it is marked as ‘failed task’.
+
+The next parameter you can pass in is ‘soft_fail’.
+
+Soft_fail is a Boolean parameter, if set to true, then in case if your event did not happen,
+
+instead of marking the task as failed, it will mark that task and all its downstream
+
+tasks as ‘skipped’ task.
+
+Alright so after this knowledge gained, lets dive into the code and use Filesensor in our
+
+running project itself.
+
+So at task t1 that where we used a bash command to check if the source file exists or not,
+
+now we can use a good and optimized version of it, a FileSensor.
+
+So I will comment out this and import the FileSensor first.
+
+Then define the task t1 again. t1 is equal to . The first parameter of course will be the
+
+task_id, then pass the full path to file whose arrival
+
+needs to be checked.
+
+Then we will pass the File system connection id.
+
+This connection id we can find in the Connections tab scroll down so here is the default fs_conn_id.
+
+Copy it and paste here.
+
+Then is the poke_interval parameter which I will set to what say 10 seconds.
+
+Yeah.
+
+Next is timeout parameter lets set to 150 seconds.
+
+Last is soft_tail, let me set it to true.
+
+Great so with this we have deployed a FileSensor in our project that will keep poking after
+
+every 5 seconds to check for input file.
+
+Okay so save it.
+
+To see how file sensor works let’s delete this source file from this location.
+
+Now go to the browser and run our store DAG again.
+
+Refresh.
+
+Our FileSensor task is still running.
+
+Refresh again… you can see it’s still running and has not failed.
+
+To get clear picture lets open its logs.
+
+Here if you notice FileSensor has poked this location at File was not there, so after 5
+
+seconds, it poked again.
+
+But again, the file was not there, so it pokes after new 10 seconds.
+
+And this will continue poking until you place the input file or it times out after 150 seconds.
+
+Let me put the input file back to its location.
+
+Now check. Cool, as soon as the source file was placed in its location our check file gets
+
+succeeded and the downstream tasks started.
+
+One thing to keep in mind while using sensor operators is to always add some
+
+timeout condition, otherwise your sensor operator will end up poking infinite times leading
+
+your DAG nowhere.
+
+So guys that was how you can use sensor operators in your DAG.
+
+Please visit the link given in resources tab and check all the sensor operators out there.
+
+Thank you
+

@@ -1,0 +1,286 @@
+So in the dags folder I have a DAG definition file ‘xcoms.py’.
+
+Guys the example in this lecture is going to be very simple as I have written focusing
+
+just on XComs with no fancy stuff.
+
+The use case of this DAG is to that task t1 will generate some arbitrary message and push
+
+it as XCom.
+
+Then other task t2 has to receive that pushed message.
+
+so we have a DAG with dag_id ‘simple_xcom’, scheduled to run daily.
+
+At the start we have some basic imports.
+
+In the default dictionary it has the owner name and the start date is set to
+
+1 day ago from its first-time execution date.
+
+then we have the DAG instantiation part, where DAG id is simple xcom and it is scheduled to run daily and nothing new.
+
+Scrolling down, this DAG is comprised of two tasks with task ids ‘push_task’ and ‘pull_task’.
+
+Both calling a python_callable function.
+
+Coming is task t1, this is its task_id, then a python_callable function defined here and
+
+here we have a new property ‘provide_context’ set to true.
+
+Guys when this provide_context is set to true; Airflow passes in a set of keyword arguments
+
+that can be used in your python_callable function.
+
+And these set of keyword arguments are represented by this keyword ‘kwargs’.
+
+Coming to this T1’s ‘push_function’.
+
+To make the provide_context to work, we need to pass kwargs as a function header.
+
+Passing it helps us, constructing a dictionary of keyword arguments and then passing onto
+
+our push_function.
+
+Notice that this function is using xcom_push() method on task instance ti, which is pushing
+
+a key value pair, where key is the unique id of message and value is the original message
+
+to be transferred. For us, we have, this is the pushed message value.
+
+Ti stands for task instance.
+
+So at this line, it retrieves the information about itself from airflow context using task
+
+instance ti from kwargs and then we are using xcom_push method on that task instance to
+
+push the key value pair.
+
+Now guys after pushing, this key value pair or you can say, this Xcom has become available
+
+to all other tasks.
+
+Any task in our DAG can pull this Xcom.
+
+In our example task T2 is doing that.
+
+In t2, provide_context is again set to true and it calls ‘pull_function’.
+
+Same like push_function, here also we have task instance coming from keyword arguments
+
+and stored it in ‘ti’.
+
+The important thing is, it is pulling the message using xcom_pull method.
+
+As arguments, I am providing the key of message to be pulled.
+
+And after pulling, I am simply printing the message.
+
+Okay, good.
+
+Let us try running it now.
+
+Ran successfully.
+
+Go check the logs.
+
+This task had pushed the Xcom.
+
+If I click on this button, it will show us the XCom key-value pair which this task has
+
+pushed.
+
+Now check pull_task logs.
+
+Yup it retrieved the pushed Xcom and printed it. If we open Xcom section
+
+under the XCom section it is empty since in this pull_task we haven’t pushed any
+
+XCom.
+
+So in the dags folder I have a DAG definition file ‘xcoms.py’.
+
+Guys the example in this lecture is going to be very simple as I have written focusing
+
+just on XComs with no fancy stuff.
+
+The use case of this DAG is to that task t1 will generate some arbitrary message and push
+
+it as XCom.
+
+Then other task t2 has to receive that pushed message.
+
+so we have a DAG with dag_id ‘simple_xcom’, scheduled to run daily.
+
+At the start we have some basic imports.
+
+In the default dictionary it has the owner name and the start date is set to
+
+1 day ago from its first-time execution date.
+
+then we have the DAG instantiation part, where DAG id is simple xcom and it is scheduled to run daily and nothing new.
+
+Scrolling down, this DAG is comprised of two tasks with task ids ‘push_task’ and ‘pull_task’.
+
+Both calling a python_callable function.
+
+Coming is task t1, this is its task_id, then a python_callable function defined here and
+
+here we have a new property ‘provide_context’ set to true.
+
+Guys when this provide_context is set to true; Airflow passes in a set of keyword arguments
+
+that can be used in your python_callable function.
+
+And these set of keyword arguments are represented by this keyword ‘kwargs’.
+
+Coming to this T1’s ‘push_function’.
+
+To make the provide_context to work, we need to pass kwargs as a function header.
+
+Passing it helps us, constructing a dictionary of keyword arguments and then passing onto
+
+our push_function.
+
+Notice that this function is using xcom_push() method on task instance ti, which is pushing
+
+a key value pair, where key is the unique id of message and value is the original message
+
+to be transferred. For us, we have, this is the pushed message value.
+
+Ti stands for task instance.
+
+So at this line, it retrieves the information about itself from airflow context using task
+
+instance ti from kwargs and then we are using xcom_push method on that task instance to
+
+push the key value pair.
+
+Now guys after pushing, this key value pair or you can say, this Xcom has become available
+
+to all other tasks.
+
+Any task in our DAG can pull this Xcom.
+
+In our example task T2 is doing that.
+
+In t2, provide_context is again set to true and it calls ‘pull_function’.
+
+Same like push_function, here also we have task instance coming from keyword arguments
+
+and stored it in ‘ti’.
+
+The important thing is, it is pulling the message using xcom_pull method.
+
+As arguments, I am providing the key of message to be pulled.
+
+And after pulling, I am simply printing the message.
+
+Okay, good.
+
+Let us try running it now.
+
+Ran successfully.
+
+Go check the logs.
+
+This task had pushed the Xcom.
+
+If I click on this button, it will show us the XCom key-value pair which this task has
+
+pushed.
+
+Now check pull_task logs.
+
+Yup it retrieved the pushed Xcom and printed it. If we open Xcom section
+
+under the XCom section it is empty since in this pull_task we haven’t pushed any
+
+XCom.
+
+------------------------------------------------------------
+
+Now Guys, you can optionally apply more filters in pull method to get only particular Xcoms.
+
+So suppose, you have 1 more task t3, here.
+
+Which is also pushing Xcoms.
+
+And this time in task t2, I only want to retrieve task t3’s Xcoms and not t1’s, then in
+
+the arguments of task t2 pull function,
+
+I will provide the task id of that task from where you want to retrieve Xcom
+
+.
+
+.
+
+Yup we got task T3’s Xcom.
+
+So guys that’s how XComs are manually pushed and pulled by the tasks.
+
+Now we have 1 more way of pushing the Xcom without using Xcom_push or explicitly assigning
+
+it to a key.
+
+In that case, any returned value is automatically pushed into XComs.
+
+So let’s see how it is implemented.
+
+In the same DAG, inside the push_function, I will comment these last lines from where
+
+we were assigning Xcom to a key and manually pushing it. and I am simply returning the
+
+message.
+
+With this our XCom would be automatically pushed without any key assigned to it.
+
+Corresponding to that in pull_function, we will remove this key parameter as this time
+
+no user defined key is associated with the XCom.
+
+Okay, so I guess that’s it.
+
+Head back to browser and refresh the DAG,
+
+trigger it again.
+
+Go to graph view… it’s running…
+
+Succeeded.
+
+Going to the push_task logs.
+
+great, this time, we haven’t manually pushed XCom.
+
+Airflow itself has pushed the returned value into XCom with the automated key ‘return_value’.
+
+If we go pull_task’s logs, yes it has retrieved the message.
+
+Now Guys
+
+Adding some more content to this lecture, we have a separate XCom section from
+
+where you can find details of all your XComs.
+
+Here you will find all the XComs pushed by all the tasks in any of your DAGs.
+
+As of now these many messages, were pushed in my system.
+
+Going through the table, we have the ‘Key’ name of pushed XCom, value stored for that
+
+key.
+
+Then Timestamp, indicates the time when the XCom was pushed.
+
+Execution date, shows the date time for the latest DAG run.
+
+Then we have ‘task_id’
+
+and the DAG id from which XCom came from.
+
+All right, so that was how you can pass ‘messages’ from one task to another using XCom. In the next lecture we will add this Xcom feature into our store sales project.
+
+
+----------------------------------------------------

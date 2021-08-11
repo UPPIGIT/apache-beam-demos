@@ -1,0 +1,853 @@
+Okay so in the last lecture we had a quick tour of Airflow UI.
+
+Before I go and explain you each and every graphical view, In this lecture first we will
+
+run the default ‘tutorial’ DAG and will see how Airflow execute the underlying jobs
+
+defined in that DAG.
+
+Please understand that, in this lecture we will simply run this DAG without knowing its
+
+underlying code.
+
+I will simply run it without knowing what are the tasks defined in this DAG, what they
+
+do and how they are created, nothing The purpose of this lecture is just to show you how a
+
+DAG file is run and how you can analyse its executional graphs in Airflow UI and please
+
+don’t worry as we will go through the DAG file code line-by-line in the next lecture.
+
+However.
+
+before I enable this DAG, I have to make a small change in it.
+
+Guys here, the start date of this DAG is set to the year 2015, which is 4 years back from
+
+now.
+
+Since Airflow comes with a feature of ‘Catchup and Backfill’, so if we run this DAG as-it-is,
+
+the scheduler will trigger a backfill of all DAG run instances for which it has no status
+
+recorded.
+
+Airflow will sense that this DAG had not run since 2015 as it does not have any data for
+
+it, so it will try to run it from date 01-06-2015 to the current date which is around 4 years
+
+of backfill.
+
+Also, since this DAG is configured to run daily and if we do some calculations, it will
+
+come out to more than 1000 of DAG runs –.If we let this thing happen, our system will
+
+probably get stuck, as currently we are on our personal computers with limited number
+
+of resources.
+
+That’s why in order to avoid 1000 DAG runs prior to today’s run, we have 2 options.
+
+Either way, we can turn off the catchup by passing the argument ‘catchup=False’ or
+
+we can change the start date of this DAG to the current date.
+
+Backfill and Catchup is a whole separate concept explained next so as now, at this stage, I
+
+will simply change the date.
+
+Okay, today is 8th November.
+
+change this.
+
+Great, now we are all set to trigger this DAG.
+
+Go back to the browser…Refresh this. Yeah, it is refreshed. Now enable it. Let me check. It did not start.
+
+Why ohh, ok got it.
+
+Actually, its good it didn’t run as it reminds me to give you a quick tip about How Airflow
+
+decides the next DAG run.
+
+So the logic behind how airflow runs the DAG automatically is.
+
+It triggers the DAG when start /last run date + schedule interval time has passed.
+
+So accordingly, if our start date is 8th November, it will run at 8+1 day i.e.
+
+around 8th November 11.59 pm UTC.
+
+That’s why either we have to trigger this DAG manually for the first time or set the
+
+start date to some previous day.
+
+After that it will run as per schedule interval.
+
+I will trigger the DAG manually.
+
+Click on this button.
+
+Now our DAG has started, and we also got some changes into the DAG table.
+
+Let’s see them.
+
+Starting with ‘DAG Runs’, it displays us the status of all previous DAG runs.
+
+If I hover over this circle you can see DAG status is ‘running’.
+
+Means 1 tutorial DAG is currently being run.
+
+This DAG will get a ‘successful’ status, only if all the tasks inside this DAG will
+
+reach the successful completion.
+
+Then under the ‘Recent Tasks’, we have 2 tasks which have no status as of now
+
+and 1 task is in running state.
+
+For your information , in this tutorial DAG,we have only 3 tasks
+
+named print_date, sleep, templated
+
+‘Last Run’ is showing us the date time on which this DAG was recently run.
+
+This is a UTC time,
+
+You can change this in airflow.cfg file which I showed you in previous lecture.
+
+Okay so enough time has elapsed.
+
+I think all the tasks should have been completed.
+
+Refresh the page again.
+
+Now this data has been changed… so now we have 3 recent tasks that are successfully
+
+completed making the whole DAG to be successful.
+
+That was pretty quick, let’s run DAG one more time and find out what this dashboard
+
+shows.
+
+Trigger it manually.
+
+Now in the DAG runs column; we have one successful DAG which is the previous DAG that we just
+
+ran.
+
+And along with it, we have one more DAG whose status is running.
+
+Total 2 dags.
+
+‘Last run’ time also got updated.
+
+Coming to the Recent Tasks, here we have 4 successful tasks 3 or previous and 1 of current
+
+run.
+
+And then we have 2 tasks which are scheduled.
+
+Refresh it again…
+
+DAG has completed successfully.
+
+Now guys, if you have noticed the behaviour
+
+of DAG runs column and recent tasks column is quite different.
+
+You may be thinking that rather than showing 6 successful tasks why is it showing only
+
+3 tasks as successful.
+
+While the DAG was running we were seeing the success tasks count getting incremented as
+
+soon as they were getting finished.
+
+But now it is showing only 3.
+
+This is because ‘Recent runs’ hold the data of previous DAG runs until the currently
+
+active DAG tasks reaches some final result.
+
+Since at that moment our tasks were running and DAG as a whole had not reached to any
+
+final result so that’s why it was showing us the old data too.
+
+But now since the DAG had got completed fully, the old data of recent runs is removed and
+
+is replaced by the latest DAG run data.
+
+I hope I made myself clear.
+
+But opposite to it, this DAG column runs behave differently.
+
+It keeps the record of all the DAG runs.
+
+So earlier we had 1 successful DAG run, this counter was 1, now with this success it incremented
+
+to 2.
+
+Same like this for every DAG run, it will increment the counter of any of these bubbles.
+
+So guys that’s the strength of Airflow UI.
+
+It provides you the real-time execution info.
+
+You can visualize the execution of various tasks in your pipeline at each moment but
+
+it is not limited to this much only as it has various graphical representations too which
+
+gives you a more immersive experience.
+
+Let us have a look at them now.
+
+Okay so in the last lecture we had a quick tour of Airflow UI.
+
+Before I go and explain you each and every graphical view, In this lecture first we will
+
+run the default ‘tutorial’ DAG and will see how Airflow execute the underlying jobs
+
+defined in that DAG.
+
+Please understand that, in this lecture we will simply run this DAG without knowing its
+
+underlying code.
+
+I will simply run it without knowing what are the tasks defined in this DAG, what they
+
+do and how they are created, nothing The purpose of this lecture is just to show you how a
+
+DAG file is run and how you can analyse its executional graphs in Airflow UI and please
+
+don’t worry as we will go through the DAG file code line-by-line in the next lecture.
+
+However.
+
+before I enable this DAG, I have to make a small change in it.
+
+Guys here, the start date of this DAG is set to the year 2015, which is 4 years back from
+
+now.
+
+Since Airflow comes with a feature of ‘Catchup and Backfill’, so if we run this DAG as-it-is,
+
+the scheduler will trigger a backfill of all DAG run instances for which it has no status
+
+recorded.
+
+Airflow will sense that this DAG had not run since 2015 as it does not have any data for
+
+it, so it will try to run it from date 01-06-2015 to the current date which is around 4 years
+
+of backfill.
+
+Also, since this DAG is configured to run daily and if we do some calculations, it will
+
+come out to more than 1000 of DAG runs –.If we let this thing happen, our system will
+
+probably get stuck, as currently we are on our personal computers with limited number
+
+of resources.
+
+That’s why in order to avoid 1000 DAG runs prior to today’s run, we have 2 options.
+
+Either way, we can turn off the catchup by passing the argument ‘catchup=False’ or
+
+we can change the start date of this DAG to the current date.
+
+Backfill and Catchup is a whole separate concept explained next so as now, at this stage, I
+
+will simply change the date.
+
+Okay, today is 8th November.
+
+change this.
+
+Great, now we are all set to trigger this DAG.
+
+Go back to the browser…Refresh this. Yeah, it is refreshed. Now enable it. Let me check. It did not start.
+
+Why ohh, ok got it.
+
+Actually, its good it didn’t run as it reminds me to give you a quick tip about How Airflow
+
+decides the next DAG run.
+
+So the logic behind how airflow runs the DAG automatically is.
+
+It triggers the DAG when start /last run date + schedule interval time has passed.
+
+So accordingly, if our start date is 8th November, it will run at 8+1 day i.e.
+
+around 8th November 11.59 pm UTC.
+
+That’s why either we have to trigger this DAG manually for the first time or set the
+
+start date to some previous day.
+
+After that it will run as per schedule interval.
+
+I will trigger the DAG manually.
+
+Click on this button.
+
+Now our DAG has started, and we also got some changes into the DAG table.
+
+Let’s see them.
+
+Starting with ‘DAG Runs’, it displays us the status of all previous DAG runs.
+
+If I hover over this circle you can see DAG status is ‘running’.
+
+Means 1 tutorial DAG is currently being run.
+
+This DAG will get a ‘successful’ status, only if all the tasks inside this DAG will
+
+reach the successful completion.
+
+Then under the ‘Recent Tasks’, we have 2 tasks which have no status as of now
+
+and 1 task is in running state.
+
+For your information , in this tutorial DAG,we have only 3 tasks
+
+named print_date, sleep, templated
+
+‘Last Run’ is showing us the date time on which this DAG was recently run.
+
+This is a UTC time,
+
+You can change this in airflow.cfg file which I showed you in previous lecture.
+
+Okay so enough time has elapsed.
+
+I think all the tasks should have been completed.
+
+Refresh the page again.
+
+Now this data has been changed… so now we have 3 recent tasks that are successfully
+
+completed making the whole DAG to be successful.
+
+That was pretty quick, let’s run DAG one more time and find out what this dashboard
+
+shows.
+
+Trigger it manually.
+
+Now in the DAG runs column; we have one successful DAG which is the previous DAG that we just
+
+ran.
+
+And along with it, we have one more DAG whose status is running.
+
+Total 2 dags.
+
+‘Last run’ time also got updated.
+
+Coming to the Recent Tasks, here we have 4 successful tasks 3 or previous and 1 of current
+
+run.
+
+And then we have 2 tasks which are scheduled.
+
+Refresh it again…
+
+DAG has completed successfully.
+
+Now guys, if you have noticed the behaviour
+
+of DAG runs column and recent tasks column is quite different.
+
+You may be thinking that rather than showing 6 successful tasks why is it showing only
+
+3 tasks as successful.
+
+While the DAG was running we were seeing the success tasks count getting incremented as
+
+soon as they were getting finished.
+
+But now it is showing only 3.
+
+This is because ‘Recent runs’ hold the data of previous DAG runs until the currently
+
+active DAG tasks reaches some final result.
+
+Since at that moment our tasks were running and DAG as a whole had not reached to any
+
+final result so that’s why it was showing us the old data too.
+
+But now since the DAG had got completed fully, the old data of recent runs is removed and
+
+is replaced by the latest DAG run data.
+
+I hope I made myself clear.
+
+But opposite to it, this DAG column runs behave differently.
+
+It keeps the record of all the DAG runs.
+
+So earlier we had 1 successful DAG run, this counter was 1, now with this success it incremented
+
+to 2.
+
+Same like this for every DAG run, it will increment the counter of any of these bubbles.
+
+So guys that’s the strength of Airflow UI.
+
+It provides you the real-time execution info.
+
+You can visualize the execution of various tasks in your pipeline at each moment but
+
+it is not limited to this much only as it has various graphical representations too which
+
+gives you a more immersive experience.
+
+Let us have a look at them now.
+
+
+--------------------------------------------------------------------------------------------------------------
+So guys we were left with these links in the UI, let’s go through them one by one.
+
+To explain these views, I will take leverage of tutorial DAG only which we had run two times it had 3 tasks inside
+
+it (print_date, sleep, templated).
+
+As of now, we are not bothered about what these tasks do, just keep in mind that these
+
+tasks are described in a way that both tasks sleep and templated require print_date to
+
+be executed first.
+
+Got it?
+
+Okay, so first link we already know is to trigger the DAG manually.
+
+I will not run it now, we already ran it 2 times.
+
+Then we have a ‘Tree view and Graph view’ for our DAG.
+
+Open the graph view first.
+
+The graph view is perhaps the most comprehensive view.
+
+In this, we can view the actual DAG at task level.
+
+So from here we can see that our DAG ‘tutorial’ has 3 tasks in it – print_date, sleep, and
+
+templated.
+
+Print_date ran first and then sleep and templated ran parallelly.
+
+All these tasks are wrapped around by a green coloured border.
+
+The colour of border basically represents the current state of these tasks.
+
+Green means that the task had executed successfully.
+
+Not only green we can have borders of these many colours, each colour states the different
+
+status of task.
+
+On the left side, we have a list of operators used in this DAG.
+
+In tutorial DAG we had used only BashOperator.
+
+What are these operators, their types and how to use them in DAG file, is covered in
+
+the next section.
+
+Then we have some filters and view layouts.
+
+Like from this Run dropdown you can choose from any of the runs of this tutorial DAG.
+
+We ran it 2 times, you can see the graph view for any of the run.
+
+From here you can switch the layout, right to left, top to bottom, and more.
+
+Let’s try top to bottom.
+
+The tasks layout has been changed.
+
+Yeah Hovering over on any task will show you some brief details about it.
+
+Like when this task was started and when it was ended, how long it took to reach final
+
+state, operator used in it etc.
+
+You can also click on any of the tasks to get a dialog box.
+
+The key link from these buttons is this ‘View Log’ button, open it.
+
+Guys opening this link will take you to the logs page for that particular task instance.
+
+You can always come here and check these logs, in case of failure.
+
+Great, so I guess that’s enough for the graph view, let’s move on to the next, tree
+
+view.
+
+You can either go from here or from the admin page, both are same.
+
+Tree view is same like the graph view.
+
+Just, here you will get a tree like representation of your tasks.
+
+The main benefit of this view is, this view can display the summary of all DAG runs at
+
+same time in 1 place.
+
+Unlike graph view where we could only see details of one DAG run at a time, here in
+
+tree view we can see details of multiple DAG runs.
+
+Going from left to right, this column has the details of first DAG run and as we move
+
+right, this column represents the 2nd DAG run.
+
+Basically, it orders the DAG runs in chronological order showing the most recent DAG run to the
+
+right.
+
+Inside each column, this circle represents the DAG itself and these boxes represent various
+
+tasks.
+
+you can hover over them and can see the task id, start data, end date and other stuff.
+
+And here in the left we have this view of DAG.
+
+If you go straight along with these points you can see which box represents which task.
+
+Just like graph view, here also we have the same colour standards for various states of
+
+tasks.
+
+As of now every thing is green, means in success state.
+
+Next, we have ‘Gantt view’.
+
+Gantt view breaks down the run times of individual tasks and shows them on timeline like this.
+
+Guys this kind of graph is us like when your pipelines are taking long time
+
+to get complete and you want to figure out the responsible task for that, so by seeing
+
+the Gantt chart you can figure out which task is taking long to run, which tasks are overlapping,
+
+or which tasks are having the parallel execution.
+
+In this example, print_date task ran first, then sleep and templated ran parallelly.
+
+This time gap in between two tasks, is the time scheduler takes to switch from one task
+
+to the second, or you can say this is the latency time of scheduler, which can depend
+
+on various factors like number of threads available, schedular heartbeat time, complexity
+
+of jobs, available resources and few other such factors.
+
+Guys, these were some important views which we use in live projects to monitor the data
+
+pipelines, rest we don’t use much but still I will give you a brief go through of them
+
+also.
+
+‘Task Duration’ – as the name implies, task duration tells us the duration of different
+
+tasks over the past runs.
+
+With task duration time on the y axis and the execution time on x axis, it shows us
+
+the time a task takes to get executed and plots the data on a graph.
+
+So from seeing graph we can say t hat in first DAG run, task sleep took 7.5 seconds
+
+to execute and in 2nd DAG run it took almost 9.5 seconds.
+
+Similarly, you can find the data for other tasks by hovering over these lines.
+
+And which line represents which task can be referred from here.
+
+Then we have ‘Task Tries’ – task tries are the number of attempts made to run a particular
+
+task, in case it is failing.
+
+Now there may be number of situations where your task may get failed due to which airflow
+
+has to restart it, so all those no. of attempts will be shown here in this task tries graph.
+
+Please note that, each of the dot here represents a single DAG run.
+
+If I hover over any of these dots, it will provide me the number of tries for every task
+
+in DAG.
+
+So Seeing from it in first DAG run, it says 2 tries each for print date, templated and
+
+sleep task.
+
+But in actual our tasks were successful just in 1 attempt.
+
+So why 2 here and not 1? you can say it may be the Airflow implementation, or can even be a small glitch,
+
+that while counting the number of task tries, it also counts the untried tasks.
+
+So 1 untried task plus 1 successful becomes 2 tasks.. which is quite odd but this is how
+
+it is.
+
+Or other way, you can assume that Airflow starts its task tries counter from 1 and that’s
+
+why it is showing 2 tries for each successful completion.
+
+Next we have ‘Landing Times’.
+
+Landing Times allows you to compare how DAGs have performed over time:
+
+Then we have ‘Details’ – under the details section, you will get the summary for the past DAG
+
+runs along with some glimpse of your DAG code.
+
+here it’s showing data like schedule_interval is set to 1 day, concurrency is set to 16.
+
+Similarly, we have some other directives like filepath – owner, and all
+
+that.
+
+Overall, there's no information that is exclusive in this view, but it offers a good summary.
+
+Last is the ‘Code’ section.
+
+here you can have a look at the code of your DAG that came from you DAG definition file.
+
+and at last we have the ‘Refresh’ and ‘Delete’ options which we already discussed.
+
+Cool! so that was for the UI part.
+
+I believe, I have covered most of the things but I would recommend you to please navigate
+
+more through these pages to get familiar with them.
+
+So guys we were left with these links in the UI, let’s go through them one by one.
+
+To explain these views, I will take leverage of tutorial DAG only which we had run two times it had 3 tasks inside
+
+it (print_date, sleep, templated).
+
+As of now, we are not bothered about what these tasks do, just keep in mind that these
+
+tasks are described in a way that both tasks sleep and templated require print_date to
+
+be executed first.
+
+Got it?
+
+Okay, so first link we already know is to trigger the DAG manually.
+
+I will not run it now, we already ran it 2 times.
+
+Then we have a ‘Tree view and Graph view’ for our DAG.
+
+Open the graph view first.
+
+The graph view is perhaps the most comprehensive view.
+
+In this, we can view the actual DAG at task level.
+
+So from here we can see that our DAG ‘tutorial’ has 3 tasks in it – print_date, sleep, and
+
+templated.
+
+Print_date ran first and then sleep and templated ran parallelly.
+
+All these tasks are wrapped around by a green coloured border.
+
+The colour of border basically represents the current state of these tasks.
+
+Green means that the task had executed successfully.
+
+Not only green we can have borders of these many colours, each colour states the different
+
+status of task.
+
+On the left side, we have a list of operators used in this DAG.
+
+In tutorial DAG we had used only BashOperator.
+
+What are these operators, their types and how to use them in DAG file, is covered in
+
+the next section.
+
+Then we have some filters and view layouts.
+
+Like from this Run dropdown you can choose from any of the runs of this tutorial DAG.
+
+We ran it 2 times, you can see the graph view for any of the run.
+
+From here you can switch the layout, right to left, top to bottom, and more.
+
+Let’s try top to bottom.
+
+The tasks layout has been changed.
+
+Yeah Hovering over on any task will show you some brief details about it.
+
+Like when this task was started and when it was ended, how long it took to reach final
+
+state, operator used in it etc.
+
+You can also click on any of the tasks to get a dialog box.
+
+The key link from these buttons is this ‘View Log’ button, open it.
+
+Guys opening this link will take you to the logs page for that particular task instance.
+
+You can always come here and check these logs, in case of failure.
+
+Great, so I guess that’s enough for the graph view, let’s move on to the next, tree
+
+view.
+
+You can either go from here or from the admin page, both are same.
+
+Tree view is same like the graph view.
+
+Just, here you will get a tree like representation of your tasks.
+
+The main benefit of this view is, this view can display the summary of all DAG runs at
+
+same time in 1 place.
+
+Unlike graph view where we could only see details of one DAG run at a time, here in
+
+tree view we can see details of multiple DAG runs.
+
+Going from left to right, this column has the details of first DAG run and as we move
+
+right, this column represents the 2nd DAG run.
+
+Basically, it orders the DAG runs in chronological order showing the most recent DAG run to the
+
+right.
+
+Inside each column, this circle represents the DAG itself and these boxes represent various
+
+tasks.
+
+you can hover over them and can see the task id, start data, end date and other stuff.
+
+And here in the left we have this view of DAG.
+
+If you go straight along with these points you can see which box represents which task.
+
+Just like graph view, here also we have the same colour standards for various states of
+
+tasks.
+
+As of now every thing is green, means in success state.
+
+Next, we have ‘Gantt view’.
+
+Gantt view breaks down the run times of individual tasks and shows them on timeline like this.
+
+Guys this kind of graph is us like when your pipelines are taking long time
+
+to get complete and you want to figure out the responsible task for that, so by seeing
+
+the Gantt chart you can figure out which task is taking long to run, which tasks are overlapping,
+
+or which tasks are having the parallel execution.
+
+In this example, print_date task ran first, then sleep and templated ran parallelly.
+
+This time gap in between two tasks, is the time scheduler takes to switch from one task
+
+to the second, or you can say this is the latency time of scheduler, which can depend
+
+on various factors like number of threads available, schedular heartbeat time, complexity
+
+of jobs, available resources and few other such factors.
+
+Guys, these were some important views which we use in live projects to monitor the data
+
+pipelines, rest we don’t use much but still I will give you a brief go through of them
+
+also.
+
+‘Task Duration’ – as the name implies, task duration tells us the duration of different
+
+tasks over the past runs.
+
+With task duration time on the y axis and the execution time on x axis, it shows us
+
+the time a task takes to get executed and plots the data on a graph.
+
+So from seeing graph we can say t hat in first DAG run, task sleep took 7.5 seconds
+
+to execute and in 2nd DAG run it took almost 9.5 seconds.
+
+Similarly, you can find the data for other tasks by hovering over these lines.
+
+And which line represents which task can be referred from here.
+
+Then we have ‘Task Tries’ – task tries are the number of attempts made to run a particular
+
+task, in case it is failing.
+
+Now there may be number of situations where your task may get failed due to which airflow
+
+has to restart it, so all those no. of attempts will be shown here in this task tries graph.
+
+Please note that, each of the dot here represents a single DAG run.
+
+If I hover over any of these dots, it will provide me the number of tries for every task
+
+in DAG.
+
+So Seeing from it in first DAG run, it says 2 tries each for print date, templated and
+
+sleep task.
+
+But in actual our tasks were successful just in 1 attempt.
+
+So why 2 here and not 1? you can say it may be the Airflow implementation, or can even be a small glitch,
+
+that while counting the number of task tries, it also counts the untried tasks.
+
+So 1 untried task plus 1 successful becomes 2 tasks.. which is quite odd but this is how
+
+it is.
+
+Or other way, you can assume that Airflow starts its task tries counter from 1 and that’s
+
+why it is showing 2 tries for each successful completion.
+
+Next we have ‘Landing Times’.
+
+Landing Times allows you to compare how DAGs have performed over time:
+
+Then we have ‘Details’ – under the details section, you will get the summary for the past DAG
+
+runs along with some glimpse of your DAG code.
+
+here it’s showing data like schedule_interval is set to 1 day, concurrency is set to 16.
+
+Similarly, we have some other directives like filepath – owner, and all
+
+that.
+
+Overall, there's no information that is exclusive in this view, but it offers a good summary.
+
+Last is the ‘Code’ section.
+
+here you can have a look at the code of your DAG that came from you DAG definition file.
+
+and at last we have the ‘Refresh’ and ‘Delete’ options which we already discussed.
+
+Cool! so that was for the UI part.
+
+I believe, I have covered most of the things but I would recommend you to please navigate
+
+more through these pages to get familiar with them.

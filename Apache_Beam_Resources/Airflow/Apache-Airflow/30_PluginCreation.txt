@@ -1,0 +1,112 @@
+Having the basic idea of plugins from last class, in this lecture we will create our
+
+first Airflow plugin.
+
+Before that let me open up the airflow configuration file and search for the ‘plugins’.
+
+Guys by default, Airflow will search for any of your plugins inside this path -/usr/local/airflow/plugins.
+
+If you want, then you change the path from here.
+
+Currently we do not have any plugins folder, so let’s create it.
+
+Plugins folder is created, inside it, create a new plugin file and name it… say ‘demo_plugin.py’.
+
+in this file we will write down the configurations for our demo plugin.
+
+Guys plugin is nothing just a custom class derived from the Airflow plugin class.
+
+So our first step would be to import the AirflowPlugin from Airflow plugins manager.
+
+after import, create the custom plugin class that will extend the Airflow plugin class.
+
+Next, inside the class we will reference the objects that we want to plug into Airflow.
+
+So the first property would be the name of this plugin itself.
+
+name equals and then pass the name (a string) of your plugin.
+
+Guys other than name, you can pass multiple other properties in this class, properties
+
+like the list of operator classes derived, list of sensors, hooks, macros, and these
+
+such things.
+
+All you have to do is, just type in the property name like to add operators’ type and, in
+
+this list, write down the class names of your custom created operators.
+
+If you wish to add sensors, type sensors and pass the sensor class names.
+
+Since we haven’t created any custom components so will keep this list empty.
+
+I will provide the names while I create them in the next lectures.
+
+By adding those class names here in the list, we would be making Airflow aware of our custom
+
+created components, so that Airflow can integrate those components into Airflow’s main collections
+
+and make them available for use just as built-in components.
+
+Alright, so the thing is the Plugin class is ready, we just have to fill this class
+
+with the custom components which we are going to create in the subsequent lectures of this
+
+section
+
+Having the basic idea of plugins from last class, in this lecture we will create our
+
+first Airflow plugin.
+
+Before that let me open up the airflow configuration file and search for the ‘plugins’.
+
+Guys by default, Airflow will search for any of your plugins inside this path -/usr/local/airflow/plugins.
+
+If you want, then you change the path from here.
+
+Currently we do not have any plugins folder, so let’s create it.
+
+Plugins folder is created, inside it, create a new plugin file and name it… say ‘demo_plugin.py’.
+
+in this file we will write down the configurations for our demo plugin.
+
+Guys plugin is nothing just a custom class derived from the Airflow plugin class.
+
+So our first step would be to import the AirflowPlugin from Airflow plugins manager.
+
+after import, create the custom plugin class that will extend the Airflow plugin class.
+
+Next, inside the class we will reference the objects that we want to plug into Airflow.
+
+So the first property would be the name of this plugin itself.
+
+name equals and then pass the name (a string) of your plugin.
+
+Guys other than name, you can pass multiple other properties in this class, properties
+
+like the list of operator classes derived, list of sensors, hooks, macros, and these
+
+such things.
+
+All you have to do is, just type in the property name like to add operators’ type and, in
+
+this list, write down the class names of your custom created operators.
+
+If you wish to add sensors, type sensors and pass the sensor class names.
+
+Since we haven’t created any custom components so will keep this list empty.
+
+I will provide the names while I create them in the next lectures.
+
+By adding those class names here in the list, we would be making Airflow aware of our custom
+
+created components, so that Airflow can integrate those components into Airflow’s main collections
+
+and make them available for use just as built-in components.
+
+Alright, so the thing is the Plugin class is ready, we just have to fill this class
+
+with the custom components which we are going to create in the subsequent lectures of this
+
+section
+

@@ -1,0 +1,81 @@
+So guys till now we have been using Airflow’s built-in components.
+
+We have used its built-in operators, sensors, hooks and all that.
+
+But in real-time projects sometimes whatever predefined components we have, they couldn’t
+
+solve our purpose and a need arises to have our own custom component.
+
+Airflow allows us to do that as well.
+
+It has a provision to let the users create their own operators, views, hooks, sensors
+
+etc.
+
+So welcome to this section where I will explain how one can extend Airflow’s features using
+
+Plugins.
+
+Starting with, let’s first understand what are Airflow Plugins.
+
+Plugins are the Airflow’s powerful and advance feature that help you to extend Airflow functionalities
+
+to meet your custom requirements.
+
+Plugins are basically used to create and add new features to Airflow, without changing
+
+the Airflow’s core foundation.
+
+They can be used as an easy way to write, share and activate new sets of features.
+
+Since plugins are built on top of Airflow, so it makes it easy to debug and it also eliminates
+
+the potential risk of any errors like dependency needs during version upgrades.
+
+Airflow has a built-in plugin manager that can integrate external features to its core
+
+by simply dropping files in the plugins folder.
+
+That is, after creating your own plugins, you can simply put those plugin files in the
+
+plugins folder and Airflow will pick those plugins from that folder and will add those
+
+functionalities to your setup.
+
+You know its kind of a ‘plug and play’ feature.
+
+Coming to why should one use plugins, see, different organizations have different stacks
+
+and different needs.
+
+They may have used different DevOps to carry out their workflows.
+
+So using Airflow plugins can be a way for companies to customize their Airflow installation
+
+to reflect their ecosystem.
+
+Last, coming to what custom components can be derived within plugins, In 1 word, I would
+
+say almost everything.
+
+You can extend functionalities of components like operators, hooks, sensors, macros, executors
+
+and many more.
+
+All you have to do is just inherit that component from its base class, define the extended features
+
+into the derived class and add those custom objects list into your plugins class.
+
+That’s it.
+
+Your custom components will get integrated to Airflow’s main collection and will become
+
+available for use.
+
+If the picture is still not clear.
+
+Don’t worry.
+
+Things will become understandable when we will create our custom components using plugins
+
+in next lecture.

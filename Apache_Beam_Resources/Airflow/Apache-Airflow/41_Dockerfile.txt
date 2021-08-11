@@ -1,0 +1,129 @@
+Welcome guys to this bonus lecture where we are going to discuss about Docker file in
+
+some detail.
+
+Like I mentioned in the start of this course, Dockerfile is the boss of all file.
+
+This is a file in which we write down a set of instructions for Docker taking reference
+
+from which Docker automatically build images by reading those instructions.
+
+In simple words, you can say, it is the file where the source code for image is written.
+
+These are the few lines of code by virtue of which we were able to get Airflow on our
+
+system.
+
+Puckle had build the Airflow image using this Docker file.
+
+Let us see what set of instructions he used.
+
+Starting with, these are the comments stating the version, author name and some other formal
+
+information.
+
+A Dockerfile must start with ‘FROM’ instruction.
+
+‘FROM’ instruction specifies the ‘Base Image’ from which you are building.
+
+Since Airflow uses python, so here we have base image ‘python:3.6-slim’.
+
+Next is an optional instruction ‘Label maintainer’ which sets the ‘Author’ field of the generated
+
+images.
+
+i.e., who will be the author of this image, which is puckel himself.
+
+Even though label maintainer is optional, but it is a good practice to define it.
+
+Next we have ‘ENV’ instructions.
+
+‘ENV’ instruction sets the environment variables in a ‘key-value’ pair.
+
+These variables are available to the containers during the build and runtime.
+
+For example, this ENV variable will prevent the installer from opening dialog boxes during
+
+installation.
+
+Then we have argument ARG instructions.
+
+The ARG instruction defines the variables that user can pass to the docker image during
+
+its build time like what will be the version or home path for the image.
+
+Next there are few more instructions for setting environment variables.
+
+Not much important.
+
+After that, we have a long set of instructions defined under the ‘RUN’ directive.
+
+RUN is basically used for installing the primary requirements for the image we are building
+
+so as to make it preloaded with requisites it is gonna use.
+
+Like, here are some pip install commands written which will install all these python packages.
+
+Guys RUN instruction executes the given commands in a new layer on top of the current image,
+
+and then after performing the current instruction, it will commit the results in the image and
+
+moves to the next instruction.
+
+Like say the current control is with this ‘pip install pytz’ command, the RUN instruction
+
+will take the latest committed image and will run this command on top of that image.
+
+After the successful run of command, the changes are committed, and the control is given to
+
+next command.
+
+This loop will continue till the last command in chain.
+
+Moving next, we have COPY – Copy as the name implies, copies new files and directories
+
+from source location to the destination path.
+
+This entrypoint.sh further has some set of configurations which are particular to Airflow.
+
+This script will get embedded in the image getting build once and for all.
+
+EXPOSE – Expose is for exposing the ports.
+
+In layman terms it informs Docker, that at runtime, the container listens on these specified
+
+network ports.
+
+FYI, port 8080 is made available for webserver.
+
+USER – It sets the user name while running the image.
+
+WORKDIR – Work directory sets the working directory for any instruction written in Dockerfile
+
+like RUN, COPY and any other instruction.
+
+If you do not specify work directory explicitly, Docker will create one by itself.
+
+ENTRYPOINT – It specifies a command that will always be executed when the container
+
+starts.
+
+Here Pucckle is specifying the path to ‘entrypoint.sh’ script.
+
+And at very last we have CMD.
+
+The main purpose of a CMD is to set or provide the defaults for the executing container.
+
+CMD specifies the arguments that will be fed to the Entrypoint.
+
+Please understand that there can only be a one CMD instruction in one Dockerfile.
+
+In case if you write two or more, then only the last CMD instruction will get run.
+
+So that was it for the Dockerfile.
+
+Again, I would say that the explanation of this file comes more under a Docker course
+
+but still since we are using the Airflow image build from this file it was my duty to explain
+
+atleast this much.

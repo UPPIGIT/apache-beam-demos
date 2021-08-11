@@ -1,0 +1,98 @@
+Let us create a new DAG. It will be a very basic one.
+
+First import the routine stuff.
+
+Then we will instantiate the dag like this.
+
+we have the dag_id ‘plugins_dag’ with the start date set to today’s date.
+
+Usual things.
+
+Now let’s move on to task creation part where we will use our new operator.
+
+So t1 equals, DataTransferOperator.
+
+Need to import it too.
+
+As parameters to this operator, the first would be the regular task_id.
+
+Now what should be the next set of parameters.
+
+Any guesses?
+
+The next parameters would be what we defined in the constructor of this class.
+
+Here we have defined the class with these 3 parameters in chronological order.
+
+source_file_path, dest_file_path and delete_list.
+
+So starting with, the first would be the source_file_path.
+
+My source file is a txt file located inside the plugins folder.
+
+Umm, I guess, I haven’t copied the files yet.
+
+second parameter is destination file path.
+
+And last, we will pass the list of keywords that should get removed.
+
+let’s try to delete the keywords ‘Airlfow’ and ‘is’ from the results.
+
+Since we have only one task, so no need to add any task dependencies.
+
+Great, so with this our DAG incorporating custom operator is ready.
+
+now we are all set to trigger it from the UI.
+
+but have we added the plugins directory into ‘volumes’ of docker compose file?
+
+No, we didn’t.
+
+Let’s quickly add it.
+
+save it and restart the Airflow.
+
+Meanwhile the services are getting up, I would like to inform you that after you make any
+
+changes into your plugins, always make sure that you restart the webserver and scheduler
+
+because only after restart, those changes will reflect.
+
+Okay, our services are up and running.
+
+Enable the plugins_dag and trigger it.
+
+It is running.
+
+Go to the graph view, refresh and… it’s done.
+
+Directly open the destination file.
+
+Our custom operator has done its job.
+
+Read the source file, removed the words ‘Airlfow’ and ‘is’ from it and wrote it to destination
+
+file.
+
+Wonderful.
+
+Let me pull up the logs.
+
+Here as specified in the operator’s execute method.
+
+It has first output the message ‘custom operator execution starts’, then printed
+
+the source file path, destination file path and the list of keywords to be deleted.
+
+After that, the control went to the nested ‘for’ loop we defined.
+
+For every line in the source file, it is matching the keyword ‘Airflow’ or ‘is’ and
+
+replacing it with empty string.
+
+Nice, So guys that was how you can take Airflow to another level by creating your own custom
+
+operators according to your Project needs. And custom operator will help you to get full control you over the project.
+
+See you in next lecture with 1 more custom component.
+

@@ -1,0 +1,188 @@
+Welcome guys to this lecture.
+
+In this lecture, we will learn about a unique operator which is not very famous but can play a vital
+
+role in some of the use cases.
+
+It is Latest only operator.
+
+Let me explain it with a use case.
+
+So guys what a Standard workflow behaviour is ?
+
+A normal workflow involves running a series of tasks for a particular date/time range.
+
+Correct?
+
+However, in some workflows we have tasks that are independent of run time but need to be
+
+run on a sharp schedule, much like a standard cron job.
+
+If those tasks are not run on schedule, then there is no meaning of running them again
+
+at some other time because then they would be of no use to us.
+
+Now In these such cases, performing backfilling of those tasks after some pause is just a
+
+waste of CPU cycles as the result from those tasks is of no use to us.
+
+So How can we make sure that those particular tasks are not run in backfilling.
+
+One way you would say that we can set the catchup to false so there won’t be any backfilling
+
+at all.
+
+But that would be done at DAG level.
+
+If you set catchup to false then all the tasks in your DAG won’t backfill.
+
+But that is not what I want.
+
+There are few tasks that should get backfilled and few not.
+
+Let me put all the situation in graph to make the scenario more clear.
+
+There are total 4 tasks in this DAG with no dependencies.
+
+Basically what I want is, if I pause this DAG today and enable it after 3-4 days then
+
+only task t3 should get backfilled and others not, rest can get skipped.
+
+If you set catchup to false, it would be set at DAG level hence you cannot gain backfilling
+
+of task t1 as well.
+
+Stuck?
+
+Well not.
+
+Airflow has provided us with an operator called ‘LatestOnlyOperator’ to help.
+
+Starting with its definition, LatestOnlyOperator is an operator that skips its downstream tasks,
+
+if the current time is not between its current cycle’s execution_time and the next scheduled
+
+execution_time.
+
+In simpler words, LatestOnlyOperator will run the downstream tasks for the most recent
+
+schedule for a DAG.
+
+Basically, this is the formula for it.
+
+LatestOnly Operator will run only those tasks when the current time i.e the timestamp at
+
+which the task execution started is between the task execution’s cycle time i.e. the
+
+timestamp for which the task is executing and its next execution time i.e the timestamp
+
+at which the task will execute next.
+
+Things will get crystal clear with an example.
+
+I will show you the DAG file of workflow that I just showed you.
+
+This is a very simple DAG.
+
+Giving you a brief idea, starting with, we have the same routine imports like DAG, datetime
+
+etc.
+
+Next the ‘dag’ is instantiated and is scheduled to run with a period of 6 hours
+
+starting from 24th Jan which is a 1 day back from now and backfilling catchup set to true.
+
+Okay.
+
+Next, we have 4 dummy tasks out of which for t3 I need backfilling and others can get skipped.
+
+To induce this what I will do is, include a new task t1 with LatestOnlyOperator
+
+Now to make it work, we just have to set the proper task dependencies of this DAG.
+
+It is obvious that t1 will run first since it is a decisive task, then t2, t4, t5 can
+
+run parallelly.
+
+T3 have no dependency on t1, hence it will be backfilled.
+
+Going to the browser.
+
+Open the graph view.
+
+This is how our DAG looks like with those task dependencies set.
+
+Let’s enable the DAG. Since start date is some previous date so my DAG is getting backfilled.
+
+It will take some time so wait till its completion.
+
+I will skip the video to its completion.
+
+In the Tree view as you can see, we have got different results.
+
+With some tasks to be green and those who were skipped are marked by pink colour which
+
+is expected.
+
+Reminding you the definition of LatestOnlyOperator.
+
+LatestOnlyOperator skips its downstream tasks, if the current time i.e when the task is getting
+
+executed is not between its execution_time and the next scheduled execution_time.
+
+Here, it has done the same.
+
+The first run for 24th January would be at 6 am.
+
+6 am because a dag is triggered soon after start_date + its schedule interval has passed.
+
+So according to the DAG file first run of the DAG comes out to be 24th Jan 6 am and
+
+correspondingly next_schdeuled time would be 24th Jan 12 pm.
+
+Right?
+
+Okay, now according to the LatestOnly Operator’s formula it checks if the current time which
+
+would be somewhere around 25th Jan is in between the execution_time i.e. 24th Jan 6am and next_scheduled
+
+time 24th Jan 12 pm.
+
+Since it is not true so LatestOnlyOperator has skipped its downstream tasks which were
+
+t2, t4 and t5.
+
+But t3 will run since it was an independent task.
+
+I can show the logs also to second this.
+
+In logs, Cycle’s execution time is the left window and next execution time is right window.
+
+Since for the first run now time i.e. 25th Jan 11:17 is not in between the left window
+
+and right window hence it has skipped all the downstream tasks.
+
+Similarly, for all these DAG runs the formula does not return true and hence dependent tasks
+
+will be skipped while independent tasks will run.
+
+But, if we go to the last dag run.
+
+In this case execution_time or you can say left window for the cycle is this and the
+
+right window or the next execution time is this . Current time would have been.
+
+if we put these values in formula would return true. hence latestRun task will allow its downstream
+
+tasks to execute hence all are green.
+
+I hope I have made my point clear.
+
+So guys this was all about latestRunOnly operator.
+
+My idea of including this rare operator in the course will prosper if any of you can
+
+make use of it in you projects.
+
+Thanks.
+

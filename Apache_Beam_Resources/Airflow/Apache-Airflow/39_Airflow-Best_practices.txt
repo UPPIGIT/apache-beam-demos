@@ -1,0 +1,188 @@
+So guys we have come a long way in this course and have covered almost every concept of Airflow
+
+and I hope, at this stage, all of you would have acquired good knowledge about it.
+
+This lecture is not to teach to any new concept rather it is to give you some Tips, Do’s,
+
+Don’ts and highlight some of the best practices that you should follow while working in any
+
+Real-time Airflow project.
+
+Guys implementing any technology in local and in production is different.
+
+Local environment is like ‘Home Sweet Home’ with no complexities, no big setup.
+
+Everything is green.
+
+But at production level where you have a big setup, a lot of complex integrated systems
+
+are there, you can come across certain pitfalls which cause occasional errors.
+
+Most importantly every downtime in your system can cause a good penalty to your company which
+
+everyone would want to avoid.
+
+Having said that let’s take a look at what all practices you can adopt while writing
+
+your Project DAGs to avoid any pitfalls.
+
+These practices are proven by experts and industry accepted.
+
+Ok so first practice.
+
+While writing tasks, always make sure that your task should never produce incomplete
+
+results.
+
+While defining tasks you should treat them equivalent to the transactions of a database.
+
+Same like any database transaction is Atomic, Airflow task should always produce a complete
+
+result.
+
+You would never want to produce incomplete data in HDFS, S3 or any other storage at the
+
+end of a task.
+
+Second, this we already had discussed in the start of this course.
+
+It is, you should define your task in a way that it should always outcome the same results,
+
+no matter how many times it has ran.
+
+Airflow has a feature to rerun or retry a task if it fails.
+
+So, in every rerun, retried task should give same results.
+
+Now talking about some of the measures which can help you in achieving the above points.
+
+Guys do not use INSERT statement during a task re-run.
+
+Because an INSERT statement might lead to duplicate rows in your database which can
+
+produce errors.
+
+You can replace INSERT statements with UPSERT which is a DBMS feature that author to atomically
+
+either insert a row or in case if that row is already existing, then the UPDATE will
+
+be done for that row.
+
+Then is always read and write in a specific partition.
+
+Never read the latest available data in a task.
+
+Someone may update the input data between re-runs, which results in different outputs.
+
+So a better way would be to read the input data from a specific partition where partitioning
+
+you can do based on execution_date.
+
+You should follow this partitioning method while writing data in S3/HDFS, as well.
+
+Then, the python function datetime.now() which gives the current datetime object should never
+
+be used inside a task, especially to do the critical computation, as it leads to different
+
+outcomes on each run.
+
+It is fine to use in some cases like to generate a temporary log but not in the actual computations.
+
+Coming back to more practices.
+
+In case if your tasks use repetitive parameters such as connection_id, or any file paths which
+
+are common to all the tasks in your DAG, then rather than declaring those parameters for
+
+each task separately, you should try to declare those parameters into default_args.
+
+This will help to avoid mistakes such as typographical errors.
+
+Next is, you should never delete a task from DAG.
+
+Because after deletion, the historical information of the task disappears from the Airflow UI.
+
+So it is advised to create a new DAG in case the tasks need to be deleted.
+
+Next, as mentioned in XComs lecture, always try to minimize the use of XComs and if it
+
+is unavoidable then you should only use XCom to communicate small messages between tasks.
+
+In case of passing large data between tasks, go with writing it to a remote storage such
+
+as S3/HDFS.
+
+Then, never store any authentication parameters such as passwords or token inside the tasks.
+
+This is an obvious thing.
+
+So where at all possible, use connections to store data securely in Airflow backend
+
+and retrieve them using a unique connection id.
+
+Use variables wherever possible.
+
+It’s a good practice to write your DAG as a parameterized DAG.
+
+So do not hard code values inside the DAG.
+
+Use variables instead.
+
+Python variables within a single DAG and Airflow variables for overall, all the DAGs.
+
+These were the basic Dos and Donts to keep in mind while you are creating DAGs for your
+
+workflow.
+
+Now coming to the Airflow deployment guide.
+
+Guys once you have completed all the above-mentioned checks, it is time to deploy your DAG in production.
+
+For deployment, there are again some precautions that you need to take, to make your application
+
+‘production-ready’.
+
+We all know that Airflow by default comes with a SQLite backend which allows the user
+
+to run Airflow without any external database.
+
+But it is not scalable and can’t handle heavy load.
+
+So if you want to run Airflow in production, always make sure you configure the backend
+
+to be an external database such as Postgres or MySQL.
+
+Second is, Airflow uses the Sequential Executor by default which is limited to execute at
+
+most one task at a time.
+
+So in production setup, you should never incorporate a Sequential Executor.
+
+Make sure to at least use the Local executor but the best suit for multi-node setup would
+
+be a Celery or Kubernetes executor.
+
+Drilling more into the above point.
+
+Guys in case if you have chosen to use multi-node setup and have configured some executor, then
+
+you have to make sure that every node in the cluster contains the same configuration and
+
+dags, as Airflow only sends only instructions to the nodes but does not send any dag files
+
+or configurations.
+
+It is expected that all the Dag files and other necessary files are already present
+
+in each node of your cluster.
+
+So guys these were some of the best practices, tips or you can say guidelines that you should
+
+follow while crafting your DAG and moving it to production.
+
+I am sure following these points will help you in building and deploying a smooth, bug
+
+free application.
+
+Thanks
+

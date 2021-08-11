@@ -1,0 +1,178 @@
+Welcome to this new lecture where we will learn how to create our own custom hooks.
+
+Guys creating custom hooks is more or less similar to creating any other custom component.
+
+So we will directly start.
+
+AS an example, we will create a hook that will transfer data from MySQL database to
+
+Postgres database.
+
+In Hooks lecture we transferred data from 1 Postgres table to another Postgres table.
+
+In this lecture we will create a custom Hook to transfer data from MySql table to Postgres
+
+table.
+
+Let’s get started.
+
+The very first import, would be of course to import the base hook from Airflow, which needs to be inherited
+
+and then, since,
+
+we will be using 2 databases here, so in order to make connections with those databases,
+
+import their respective hooks as well.
+
+We have imported the built-in MySQL hook and Postgres hook. imports are done.
+
+Let’s start with creating our custom hook class.
+
+this class should inherit BaseHook
+
+and then create a constructor for this class.
+
+This time, the constructor does nothing, but on invocation, it will just print a message
+
+to intimate that custom hook has been started.
+
+Now guys same like any other custom component, in hooks also we need to define some functions,
+
+inside which, all the hooks execution will be described.
+
+Here you can create multiple functions in this class to carry out the data transfer like
+
+data fetching thing from Mysql in 1 function and data insertion to Postgres table in another
+
+function.
+
+But I will be doing all things in one function.
+
+To copy data, create a new method
+
+‘copy_table’
+
+pass parameters ‘self’,
+
+and it would require 2 more parameters - the MySQL connection id, and Postrges connection id.
+
+Now guys you would be wondering why in previous class definition, I was providing the expected
+
+parameters in constructor but here why I am passing them into this copy_table function.
+
+See, as I just mentioned, that for hooks you can create multiple functions inside its class
+
+and each of those function can expect different parameters from the other.
+
+So to give each function, a flexibility, we will pass the requisite parameters list at
+
+the function definition level and not in constructor.
+
+So… let’s write the logic that will move data from MySQL to Postgres.
+
+this again is a very simple code.
+
+Starting with MySQL block.
+
+In this block we are actually pulling the records from MySQL table.
+
+In 1st line of this block we have used the MySQL connection id passed in arguments to
+
+connect with MySQL database.
+
+Next, is the SELECT statement to fetch records from a city_table.
+
+FYI, this is the same table that we used in hooks lecture of this course.
+
+After fetching the records, we have put them into a ‘data’ variable.
+
+Fetching data from MySQL DB is done.
+
+Let’s move on to the inserting part.
+
+Same like above, in this Postrges block, we are using the Postrges connection id to connect
+
+with Postgres then inserting the rows into the same city_table but of Postrges database.
+
+Last, to make a successful completion we are just returning a true value.
+
+And that’s it!
+
+Our custom hook definition to transfer data from MySQL to Postrges table is ready.
+
+let’s put an entry for this hook in out plugin.
+
+Create a new property hooks
+
+and pass this class name.
+
+Everything from plugins side is done.
+
+We are just left with writing a task that will use this hook.
+
+Open the DAG file.
+
+first of all, import the MySQLToPostgresHook
+
+Using Custom Hooks operator in DAG is a little different than the others as in this, we
+
+will be calling the copy_table from a python_callable inside PythonOperator only,
+
+so import PythonOperator as well.
+
+Create a new task using PythonOperator.
+
+And this task will call a python function ‘trigger_hook’.
+
+Let me define ‘trigger_hook’ function.
+
+so from MySQLToPostgresHook() we will give a call to copy_table method.
+
+And this method would expect two parameters mysql connection id, and postgres connection id.
+
+I have already created these connections from Airflow UI, will directly pass them.
+
+Let me last print a message also.
+
+DAG is complete.
+
+Let’s run it.
+
+But wait, I found some issues in the code.
+
+Actually, MysqlToPostgresHook should be imported from hooks and not from operators.
+
+Let’s correct it.
+
+Also, here the function call should not be in quotes.
+
+Now we are ready to run this.
+
+again we have to restart the Airflow.
+
+It is up.
+
+Enable the DAG and trigger it.
+
+DAG is completed.
+
+Open the logs.
+
+As you can see at this moment our MySQLToPostgresHook started its execution.
+
+And at this moment, it started pulling the records from MySQL table.
+
+And after pulling, here it has inserted those records into the Postgres table.
+
+And after the successful completion, message ‘done’ is printed.
+
+These were the logs.
+
+Let’s hop into the Ad-hoc queries and see what we got in postgres table.
+
+select the postgres connection.
+
+Great, we got 4 rows in the postgres city_table.
+
+So guys this was how you can create your own custom hooks and can manipulate its functioning.
+

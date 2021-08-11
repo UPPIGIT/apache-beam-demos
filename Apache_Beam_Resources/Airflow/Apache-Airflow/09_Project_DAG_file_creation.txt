@@ -1,0 +1,841 @@
+Dag definition file, I will create from very scratch.
+
+Inside the dags folder create a new file and save it as let say… ‘store_DAG.py’.
+
+The first thing, we’ll do is import some basic libraries that it is gonna need.
+
+Then define a dictionary of default parameters that we can use while creating tasks.
+
+I will keep the dictionary name as default_args, and inside it, let the owner be ‘Airflow’
+
+and set the start date to today's date.
+
+Retries is set to 1, means every task will be retried 1 time after an interval of 5 seconds.
+
+Now we’ll need a DAG object to nest our tasks into it.
+
+So let’s instantiate a DAG object.
+
+Type dag = DAG and then pass the parameters.
+
+First parameter – will be the unique DAG ID, ‘store_dag’, next I will pass the
+
+default arguments created above.
+
+Next parameter we will set the schedule interval.
+
+Since the requirement is to generate daily reports so set it to run @daily.
+
+And last, we will set the catchup to false so as to turn off the backfilling for this
+
+DAG.
+
+I don’t want my DAG to run for any previous dates.
+
+With this, we have instantiated a DAG.
+
+Now let’s move ahead and design tasks for this DAG.
+
+So after seeing the project requirements and as per industry standards for a basic projects,
+
+what should be our first task?
+
+Our task should be to check if the source file exists or not.
+
+There is no sense to start the cleaning process if the input file itself is not present.
+
+So our first would be to check if the source file is present in the input directory location
+
+or not.
+
+I am going to use a BashOperator for the same.
+
+So t1 equals to BashOperator
+
+Let me import it too.
+
+Let’s start passing the parameters.
+
+First, we will pass a unique task id.
+
+So task_id equals to ... check file .. exists. Always make sure to pass a relevant task id
+
+so as it’s easy to track it in UI).
+
+Then after the task id we’ll write the bash command that will help us to determine if file exists or not.
+
+The command I have used here is ‘shasum’.
+
+Guys shasum returns a shasum value only if a file exists, otherwise, it will throw an
+
+error.
+
+So shasum and then the file path which we want to check.
+
+Notice that this path is the Airflow’s container path which we have already mounted in the
+
+compose file and FYI, this tilde sign represents Airflow home path.
+
+Let me also add the number of retries this task should made in case if it gets failed
+
+due to unavailability of file at right time.
+
+And in conjunction to retries, I will also specify the retry_delay interval after which
+
+the retry should be made.
+
+This retries=2 & retry interval is of 15 seconds,These values will override the values what we mentioned in default_args
+
+dictionary.
+
+At last the instantiated dag. This is because any operator we instantiate in our DAG file, it
+
+needs to be assigned to the DAG we created.
+
+So in every operator we have to pass the instantiated DAG as parameter to link that operator with
+
+that DAG.
+
+Task t1 is ready.
+
+Let’s quickly check it in UI.
+
+Before that, let me change it to today's date.
+
+Save it
+
+Refresh
+
+enable the DAG and trigger it.
+
+open the graph view.
+
+We got one task entry in our DAG.
+
+If I open up the logs for this task.
+
+See, here since our file was present in the directory so we got this string as a shasum
+
+of our file.
+
+Guys, the interesting thing is, ideally BashOperator is not a good choice for this kind of checking.
+
+Airflow has a very efficient and dedicated operators to do so.
+
+But, as we are in the early stage of learning Airflow, so I am using shawsum Bashoperator for
+
+the time being.
+
+But don’t worry, I have covered the better Airflow approach somewhere next in the course.
+
+In that lecture, I am going to modify this same task with a special Operator used for
+
+such kind of checkings.
+
+Anyways, the next immediate step would be to read and clean the file.
+
+Remember, we have those unwanted symbols in store location and a dollar sign prepended
+
+with prices.
+
+So our task 2 will be data cleaning.
+
+I have built a python function to clean the file, it means task 2 should use a PythonOperator.
+
+Import it.
+
+For the parameters, task_id will be ‘clean_raw_csv’.
+
+And then we will call our python function using python_callable parameter.
+
+My function name is data cleaner, And Yeah, to use the python file, import it first.
+
+Last would be mandatory dag.
+
+Alright, task t2 is also complete and let me give you quick idea of our data_cleaner function.
+
+This is a very simple python code where have a method data_cleaner.
+
+Inside it, first we are reading the csv file.
+
+After reading, we have three different functions preforming the data cleaning process.
+
+The 1st is clean_store_location.
+
+This function will remove any special symbols from the store_location column.
+
+The 2nd function clean_product_id, will clean the product id column.
+
+This method will remove any other characters other than integer, hence returning only integer
+
+value.
+
+Then we have a ‘remove_dollar’ function which will remove the dollar sign from all
+
+the price columns.
+
+The next two lines are giving call to clean_store_location and clean_product_id functions.
+
+For remove_dollar function, since we have four columns having dollar sign, so we are
+
+calling it inside a ‘for’ loop each loop for one column.
+
+At last, after all the functions ran, we are saving the clean data in a new clean_store_transactions
+
+file which would be placed in the same directory where raw file was placed.
+
+That’s it for this function.
+
+Task t2 is done.
+
+Let me also set the task dependencies side by side, otherwise it will be confusing
+
+at the end.
+
+It’s obvious that t1 needs to run before t2. so t1 t2.
+
+Guys as added in Airflow 1.8, it’s recommended to use bitshift operators than the traditional
+
+set_upstream() and set_downtream() method.
+
+Shall we check running task t2.
+
+Yeah, we can, it won’t take much time.
+
+Trigger the DAG again.
+
+Now we have two tasks with their execution dependencies.
+
+DAG is successful.
+
+Let’s check the output file. It would be in two store files.
+
+Yeah, it got created.
+
+Excellent, all the unwanted characters are removed, we got a clean/neat file.
+
+What should be the next task.
+
+Our next task should be to load the clean file into MySQL.
+
+But loading can only be done if the table is there.
+
+So in task t3 we should be running a ddl command to create table.
+
+To work with MySQL, Airflow has provided us with a dedicated MySqlOperator. So I will import it first.
+
+t3 equals to
+
+As usual task id , 2nd argument to this operator would be mysql connection name ,Mysql_connection_id.
+
+This MySQL connection id parameter is a string that will hold reference to a specific MySQL
+
+database with which we are going to interact.
+
+This is same like a database connection string we usually do normally in any environment.
+
+Value to this string or you can say the actual connection, we will create in next lecture.
+
+Okay connection is established, next we will pass the actual SQL query, this task is going to execute.
+
+Guys here you can pass a list of SQL statements separated by semicolon but if you have multiple
+
+queries to run then it is recommended to give the reference of sql template or simply a
+
+sql file you can say and I am going to pass that file only.
+
+So first of all we have to create that sql script.
+
+Inside our main project folder, we already had created ‘sql_files’ folder.
+
+Create new file there, create_table.sql. and paste the ddl query for table creation.
+
+This is a very simple SQL ddl query.
+
+Create table with these columns store id, store location, and all these.
+
+The keyword ‘IF NOT EXISTS’ is important, it will limit the table creation if this table
+
+is already present in MySQL database.
+
+So basically, this table is going to get created only in the first DAG run.
+
+I will pass the template name here.
+
+Now one more thing we have to do here is
+
+See, we have created the sql template in sql_files folder and also have passed its reference
+
+here.
+
+But how will Airflow know from which path it has to fetch this sql file.
+
+One easy way would be to provide the full path here itself in the sql parameter but
+
+NO, that’s not the option.
+
+Airflow doesn’t work this way.
+
+It allows only sql file name here.
+
+But Airflow has provided a provision to set the path in a DAG property named ‘template_search path’.
+
+So in the DAG
+
+I will add template_search path
+
+and in the brackets provide the path to the directory where our sql template is placed
+
+Now on task t3 execution, Airflow will look for this sql file at this location of its
+
+container.
+
+Keep in mind that I have already mounted sql_files folder in docker compose file.
+
+According to the flow, add t3 after t2
+
+Great so with this our task t3 to create a MySQL table is ready.
+
+Before I could run this task I have to create connections for mysql.
+
+Which I am going to do in next lecture.
+
+
+Search all course questions
+Search all course questions
+
+
+connection to mysql--
+-------------------------
+Welcome to this small lecture, where we’ll learn how to create and manage connections
+
+in Airflow UI.
+
+Airflow gives us the freedom to connect to almost any database under the sun.
+
+In your DAG, you may define your job to perform any tasks with databases like GCP, S3, MySQL,
+
+Oracle etc.
+
+But before you can use them, Airflow needs to know how to connect to that database.
+
+Airflow needs some information such as the hostname, port, databases login and passwords
+
+to connect to your database.
+
+All this info, we are going to provide it as a connection string.
+
+FYI, the connection information to external systems is stored in the Airflow metadata
+
+and it can be easily managed from its UI.
+
+So let’s start creating a MySQL connection. Go to UI.
+
+Under Admin we have ‘Connections’.
+
+These are the list of connections that are already been created by default.
+
+To create a new connection, click on ‘Create’ and it will ask you to enter few things.
+
+The first is the connection id (conn_id) for your connection.
+
+This is the user defined id for this connection.
+
+Ours was. My Sql conn.
+
+It is recommended to use lower-case characters separated by underscores.
+
+Then under the connection type field choose the type.
+
+Here you will find a long list like GCP, S3, Azure, and many more.
+
+I will choose MySQL.
+
+Next you have a field ‘host’ to connect.
+
+For MySQL, the host is ‘mysql’.
+
+Then we have an optional field ‘Schema’ where you can specify the schema name to be
+
+used in the database.
+
+Put mysql here.
+
+And then we have ‘Login’ where you need to specify the user name, which is ‘root’
+
+and the password which is ‘root again.
+
+I will skip this ‘port’ and ‘Extra’ fields.
+
+Basically, In Extra you can specify the extra parameters as json dictionary that can be
+
+used in MySQL connection.
+
+Extra parameters like charset, ssl and stuff.
+
+Save it.
+
+Great our connection is created.
+
+In the list now we have an entry for our newly created MySQL connection.
+
+Anytime if you wish to edit or delete this connection you can do it from these two buttons.
+
+Okay.
+
+Now that we have the connections ready, we can run the DAG again.
+
+.
+
+.
+
+I will directly go to the CLI and check for table.
+
+What exactly I am doing in CLI and these cli commands I will explain them in detail in
+
+the coming lecture.
+
+As of now, we are just concerned to check if the table got created or not.
+
+In short to tell you, after all those commands right now I am in Mysql’s container.
+
+Yup the table is there, task t3 is a success.
+
+let us move to task t4.
+
+
+Search all course questions
+Search all course questions
+Loading...
+
+
+---------------------------------
+
+
+I believe every task is in its place and we can run the complete DAG for today.
+
+Save this file and I will do a fresh re start for this DAG.
+
+Will restart airflow.
+
+And I will come up with the results in next video.
+
+After the table creation, our next task will be to load the data of our clean file into
+
+newly generated table.
+
+So let’s move on to task t4.
+
+This task will be more or less same like task t3, only the sql query will change.
+
+So copy and paste.
+
+I will change this template name to ‘insert_into_table’.
+
+Now create the template.
+
+This is also a basic sql query to load file into table.
+
+Load data infile, infile means local file, into this table where fields are
+
+terminated by comma and lines are terminated by n line and since our first row of input
+
+file is a header so ignore 1 row.
+
+Please notice the input file path in this query.
+
+It is the Mysql container path. Save it and in the operator relationship
+
+this will be t4.
+
+in the operator relationship it would come after t3.
+
+save
+
+Run the DAG again.
+
+Okay. The DAG ran successfully. Again, go to Mysql container
+
+and run select * from clean store transactions.
+
+Good. t4 is also a success. Going back to DAG file.
+
+Our next task would be to apply some aggregations on our table to fetch the desired information
+
+out of it.
+
+Here too we have to use Mysqloperator.
+
+It would be select from table.
+
+create the template.
+
+So what were our requirements.
+
+We have to generate 2 reports.
+
+1 was daily profit, location wise.
+
+And also, the daily profit of each store.
+
+It is going to be a very basic groupBy query.
+
+I believe most of you won’t need its explanation.
+
+In this SELECT statement I am selecting date, store location, and then to calculate the
+
+profit subtract the cost price from selling price, from clean_store_transcations table
+
+where date = yesterday’ date as we are processing the yesterday’s sale data, group by store
+
+location and order the results by profit in descending order.
+
+The results of this query, we are putting them in a CSV file in this folder.
+
+This was the first required information set.
+
+Next to get the profit of each individual store.
+
+Nothing much will change, only, here it would be store id, here it would be store profit, groupby would be store location, orderby would be store profit and we need to change
+
+the csv file also.
+
+Save it Back to the DAG file, put t5 task after t4.
+
+Run.
+
+Succeeded.
+
+And the files got created.
+
+I will show you the content of output csv files at last.
+
+Let me complete the DAG quickly.
+
+Basically, we are left with 1 major task of sending an alert email to company while attaching
+
+these csv files.
+
+But before we email the files, I guess its better to rename the file to much appropriate
+
+names.
+
+Like we can embed a date in the filename so that files can be searched at a glance.
+
+Moreover, if you leave the files with same name, then in tomorrow’s DAG run, you will
+
+get an error saying the 2 output file with same name already exists which would be true
+
+though.
+
+For these reasons, we have to change the output file names.
+
+I will use a bash command for this.
+
+Going through, we have a BashOperator with task id ‘move_file1’.
+
+As an add on, I have also added a ‘cat’ command to get the results of CSV in logs,
+
+you can skip this command if you want.
+
+The other command is ‘move’ to rename the file while appending a variable ‘yesterday’s
+
+date with it.
+
+Yesterday’ date because the data which is getting processed today is yesterday’s data.
+
+let’s define the yesterday_date also.
+
+Today’s date – 1 day.
+
+Now let’s create one another task to rename second output file.
+
+This is same like the task t6 .
+
+let’s add these tasks in a row.
+
+,
+
+Do you think there is any relationship between these tasks t6 and t7.
+
+No there’s not.
+
+Right! as they both are renaming two different files.
+
+It means these tasks are independent and can run parallelly.
+
+In order to make their execution parallel we can GROUP their dependencies into one set
+
+like this.
+
+With this, both tasks t6 and t7 will run after t5 but in parallel.
+
+Perfect!
+
+I guess, now we can send email to our client.
+
+To send emails from Airflow, it has provided us a dedicated EmailOperator.
+
+So, first of all import it.
+
+And then create a new task ‘t8’.
+
+Apart from task_id
+
+EmailOperator supports parameters like to email_id to whom you are sending email, ‘subject,
+
+html_content, and more.
+
+Recipient address, I will mention in to
+
+As of now I am mentioning example.com. I will change this email address to my personal before running
+
+this DAG.
+
+Subject of email will be ‘Daily reports generated'
+
+Next if you wish to write down the body or the content part of this email then you can
+
+pass it inside the ‘html_content’ parameter.
+
+You need to write the code in html format for whatever content you want to send.
+
+Here I have a heading h1 saying ‘Congratulations!
+
+Your store reports are ready.’
+
+and last parameter we will attach the generated csv with this email.
+
+To attach any file with email, you can use ‘files’ parameter.
+
+Inside the square brackets you can pass a list of files you want to attach.
+
+I am passing the file location while suffixing the date for which this report is of. and
+
+last is the mandatory dag.
+
+Guys along with these parameters you can pass additional parameters like ‘cc’ or ‘bcc’ recipients of your email
+
+by passing parameters ‘cc’ and ‘bcc’ respectively.
+
+Please understand that to make this EmailOperator work in your Airflow environment you need
+
+to set the SMTPs which we have already set in our compose file.
+
+This much for EmailOperator.
+
+yeah, let me add the dependencies.
+
+Now Moving ahead to task t9.
+
+But wait shall there be a task t9.
+
+We already have sent the email to client then what next is pending.
+
+Think over it.
+
+Ok, so task T9 will again be a renaming task of our input file.
+
+Client is going to send the input file for next day in the same location with same name.
+
+So to avoid ambiguity error we need to rename it too.So t9 = Bashoperator with the command of renaming the file
+
+and at t9 to task dependencies list in the last. Good so far.
+
+I believe every task is in its place and we can run the complete DAG for today.
+
+Save this file and I will do a fresh re start for this DAG.
+
+Will restart airflow.
+
+And I will come up with the results in next video.
+
+
+-------------------------------------------------------
+
+So the fresh webserver is up and running.
+
+Please understand that once you have restarted your webserver, you have to create the mys_sql
+
+connections, which I have already done after the restart.
+
+Trigger the DAG.
+
+Excellent, it got successfully completed.
+
+If we open the graph view.
+
+Graph view is itself acknowledging that our DAG ran as per the dependencies.
+
+Check_file_exists ran first then t2 ran, after that table got created, data got loaded into
+
+it.
+
+Then aggregations were done on that data with task t5.
+
+After t5 since task t6 and t7 were grouped in a set, so they ran parallelly. Then send e.mail and rename the file.
+
+For results, I have already shown you the results till task t4.
+
+So I will show you the results from t5.
+
+Task t5 was the aggregation task which was creating 2 output files and then task t6 and
+
+t7 were renaming those files to yesterday’s date.
+
+And see we have got the renamed files. Location wise with yesterday's date, Store wise with yesterday's date.
+
+If I open the content of lcoation_wise profit.
+
+Date, location and total profit on 3rd December for all locations.
+
+Open store_wise_profit.
+
+Yeah, date, store_id and profit each store made on 3rd December.
+
+Then task t8 was to email both these files to client.
+
+I had changed the ‘to’ parameter to my email address before running the DAG.
+
+So I will open my gmail.
+
+Cool!
+
+I have received one new email with a subject ‘Daily reports generated’.
+
+Open it.
+
+Here we have the email body part that we gave in html_content and these are the 2 attachments location wise profit and store wise profit. Great, is not it.
+
+And last t9 was to rename the raw file.
+
+And it has done perfectly.
+
+So guys, that’s how you write DAG files in Apache Airflow.
+
+From here, I would recommend you take this knowledge ahead, make this use case more complex
+
+or even think of a new use case, add new operators into it and try scheduling the DAG on your
+
+own.
+
+And yes, I will try to demonstrate how this DAG runs automatically in tomorrow’s run.
+
+I will start recording this lecture tomorrow at the same time when this DAG is scheduled
+
+to run.
+
+Thank you.
+
+
+
+
+-----------------
+
+'with ' Context Manager
+--
+So we learnt how to write a DAG definition file and wrote a DAG object for our store
+
+application.
+
+This lecture will be a very short, where we will learn about using a ‘with’ keyword
+
+while instantiating DAG.
+
+Guys as we saw in our store_dag or default tutorial dag, what we were doing was, we were
+
+creating the DAG instance inside a variable and then we were passing the same variable
+
+inside each operator’s parameter, see the last parameter of every tasks was being set
+
+as dag=dag so as to assign that operator to our DAG, which is quite a repetitive activity
+
+and usually we forget to pass this last parameter.
+
+In-fact I also forget to add this parameter 1 or 2 times while recording the store_DAG
+
+lectures, due to which I got the Broken Dag error.
+
+To avoid such repetitions and un-necessary errors, from Airflow 1.8 we can leverage the
+
+context manager to automatically assign new operators to our DAG.
+
+For that we will use a python keyword called ‘with’.
+
+From the python documentation ‘with’ is a keyword that is used to work with unmanaged
+
+resources.
+
+So practically, if we see, to use it first delete this dag variable and type ‘with’.
+
+And then this whole block is the ‘with’ expression which will remain the same and
+
+at last write ‘as’ and the variable ‘dag’ and colon.
+
+Our ‘with’ control structure is ready and we need to indent all the tasks inside
+
+‘with’ expression.
+
+And after it, erase all dags from operators’ parameters. Save it. That is it.
+
+Guys since this is the standard approach used in real-time projects so I would recommend
+
+you to follow this from now on and If you run this DAG again in UI, it will give us
+
+the same results.
+
+You can try it too. Thanks and I will see you in the next lecture.
+
+So we learnt how to write a DAG definition file and wrote a DAG object for our store
+
+application.
+
+This lecture will be a very short, where we will learn about using a ‘with’ keyword
+
+while instantiating DAG.
+
+Guys as we saw in our store_dag or default tutorial dag, what we were doing was, we were
+
+creating the DAG instance inside a variable and then we were passing the same variable
+
+inside each operator’s parameter, see the last parameter of every tasks was being set
+
+as dag=dag so as to assign that operator to our DAG, which is quite a repetitive activity
+
+and usually we forget to pass this last parameter.
+
+In-fact I also forget to add this parameter 1 or 2 times while recording the store_DAG
+
+lectures, due to which I got the Broken Dag error.
+
+To avoid such repetitions and un-necessary errors, from Airflow 1.8 we can leverage the
+
+context manager to automatically assign new operators to our DAG.
+
+For that we will use a python keyword called ‘with’.
+
+From the python documentation ‘with’ is a keyword that is used to work with unmanaged
+
+resources.
+
+So practically, if we see, to use it first delete this dag variable and type ‘with’.
+
+And then this whole block is the ‘with’ expression which will remain the same and
+
+at last write ‘as’ and the variable ‘dag’ and colon.
+
+Our ‘with’ control structure is ready and we need to indent all the tasks inside
+
+‘with’ expression.
+
+And after it, erase all dags from operators’ parameters. Save it. That is it.
+
+Guys since this is the standard approach used in real-time projects so I would recommend
+
+you to follow this from now on and If you run this DAG again in UI, it will give us
+
+the same results.
+
+You can try it too. Thanks and I will see you in the next lecture.
+
+

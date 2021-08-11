@@ -1,0 +1,66 @@
+Welcome guys to this new section where we will learn about Airflow executors and will
+
+see how we can wisely choose from different executors available out there to do the ‘best
+
+resource management’ in terms of task execution.
+
+Now talking in context of Airflow, guys Apache Airflow stresses out on its one major feature
+
+that ‘Airflow is Scalable’.
+
+In fact, it says you can scale it to infinity.
+
+To understand it more clear, let us have a recap of airflow’s architecture.
+
+In every Airflow application once we define a DAG, and feed it to Airflow, few things
+
+happen behind the scenes.
+
+From Airflow architecture we know that Airflow metadata database keeps a record of all tasks
+
+within a DAG and their corresponding statuses.
+
+Now to execute the tasks, scheduler reads from this meta database and checks the status
+
+of each task.
+
+Depending upon the task status, scheduler decides which tasks should be executed and
+
+in what order it should be done.
+
+After the status reading, is the moment where executor’s part comes in.
+
+Executor works closely with scheduler and it figures out what resources or what worker
+
+processes will actually complete those tasks in field.
+
+So after getting the instructions from scheduler about the list of tasks ready for execution,
+
+the executor assigns them the workers from available pack of them.
+
+That’s how the tasks are executed.
+
+Now Apache Airflow framework provides us different kinds of executors that you can configure
+
+in your application.
+
+Mainly there are three types of executors – Sequential, Local, and Celery Executors.
+
+They all are derived from Airflow’s base executor class.
+
+And other than these three, there are some customized versions of executors too that
+
+are built on the top of base executors.
+
+Mesos, Dask, Kubernetes, etc are some examples of it which are built for the specific Airflow
+
+ecosystem.
+
+So depending upon your application needs, you can configure from any of the available
+
+executors in you airflow configuration file.
+
+Okay so that was an introduction to executors.
+
+From the next lecture we will start implementing each of the basic executors.
+

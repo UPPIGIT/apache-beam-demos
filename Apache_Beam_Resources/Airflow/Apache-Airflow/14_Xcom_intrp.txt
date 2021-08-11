@@ -1,0 +1,95 @@
+Welcome guys to this section where we are going to discuss some of the advance concepts
+
+of Apache Airflow which comes very handy in any real time projects.
+
+And as a very first lecture we will discover how to exchange messages between tasks using
+
+XComs.
+
+So until, now whatever DAG we have seen, the tasks inside it were not communicating with
+
+each other.
+
+Each of the tasks was having its own set of commands to run.
+
+In no case the 2 tasks were transferring any data or messages to each other.
+
+But in Real-Time scenarios, there may be situations where your application demands to transfer
+
+small data from one task to another.
+
+For example, in a DAG you have task t1 that reads some values from a txt file and in task
+
+t2 you need those values to perform some filter operations on some table.
+
+So somehow you need to pass data from task t1 to t2.
+
+To do so, you may consider storing the fetched records from task t1 into some temporary table,
+
+and then in task t2, it will first read data from temporary table and then you will actually
+
+use it for filtering on your required table.
+
+Right?
+
+This is a valid approach, and infact the best approach if your data to be transferred is
+
+huge but this approach will be a bit thick if you have a very small data to transfer.
+
+If your data to be transferred is small then the steps of creating a temporary table, writing
+
+the data and then reading it, would look unreasonable.
+
+So for these such small data exchanges between tasks, Airflow has provided us a method called
+
+‘XComs’ acronym for ‘Cross-Communication’.
+
+Before we start learning XComs, let me make one thing clear from Airflow documentation
+
+which states that ‘Airflow is not a data streaming solution’, so at the first hand, you should always
+
+try to keep any data transfers ‘away’ from the tasks, but if that transfers absolutely
+
+can’t be avoided, then only XComs should be put in use.
+
+Anyways, for those unavoidable situations let’s start learning XComs and few key concepts
+
+in it.
+
+XComs or ‘cross-communication’, is an advanced Airflow feature that allows the tasks
+
+to exchange messages or data amongst them.
+
+XComs are stored in Airflow’s metadata database and can be easily accessed through Airflow
+
+UI.
+
+XComs stores data in the form of key-value pair.
+
+In-fact, XComs are principally defined by a key, value, along with a timestamp.
+
+Unlike ‘Variables’ that just store data in key-value pairs, XComs along with key-value
+
+pair also keeps the track of timestamp when they were created, i.e. the timestamp when
+
+a task or DAG created the XCom.
+
+Now talking about how XComs work at code level.
+
+In a single line if I have to say, XComs are ‘pushed and pulled’.
+
+Where ‘push’ means to ‘send an XCom’ and ‘pull’ means to ‘receive an XCom’.
+
+So in the scenario we just discussed, if you want to send some data from task t1 to task
+
+t2, then the data at task t1 can be pushed by using the ‘xcom_push()’ method which
+
+will make that data available for all other tasks in the DAG.
+
+And in whatever task you want to retrieve the pushed data, you can retrieve it by using
+
+method ‘xcom_pull()’.
+
+Alright, so these were some of the properties of XComs.
+
+Now it’s time to get into the code and see how actually XCom works at code level.

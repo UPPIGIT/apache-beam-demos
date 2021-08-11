@@ -1,0 +1,255 @@
+In this lecture we will learn about a very simple, yet powerful Airflow operator called
+
+‘DummyOperator’.
+
+Starting with its definition, according to Airflow’s official documentation, a Dummy
+
+operator is an operator that literally does nothing.
+
+Yes, you heard it right, it does nothing.
+
+Unlike other Airflow operators that are built to perform some specific tasks, Dummy operator
+
+is sort of a different operator that is used to only group tasks in a DAG.
+
+To showcase the use case of Dummy operator, let me describe an example.
+
+So guys suppose you have a DAG where you have tasks arrangement like this.
+
+Here you have two lists of tasks.
+
+tasks t1 through task t5 are in one group and task t6 through task t10 are in second
+
+group.
+
+Tasks in each group does not have any operational dependency but it is mandated that tasks from
+
+list one will execute first, then from list two.
+
+Got it.
+
+Let me even show you the DAG file of it.
+
+This is a very basic DAG with 10 tasks using BashOperator.
+
+The first 5 tasks are printing Date and the tasks from second set are simply printing
+
+Hi.
+
+Anyways, Now the problem with kind of arrangement is, if you would run this DAG you will get
+
+an error of unsupported operand type for lists.
+
+This is what you will get.
+
+Why because, the individual tasks in the first list do not know to which task they should
+
+map to in second list.
+
+So Suppose on DAG execution, task t1 executed first.
+
+Now after its successful completion, to whom should it give control to, to which task from
+
+second set it should lead to?
+
+Should it be task t6, t7 or any other task from 2nd list.
+
+similarly, all the tasks of list 1 would be in same situation.
+
+They would not know after their successful completion to which task they should give control to. Now To resolve these such conflicts, Dummy operator
+
+comes into play.
+
+Before explaining, lets embed the dummy operatorin this DAG.
+
+First, import it from the Airflow operators.
+
+After import, create a new task ‘td’ with DummyOperator.
+
+it’s pretty much simple, an operator with just task_id and dag instantiation.
+
+That’s it.
+
+No more parameters as it literally does nothing.
+
+And now after defining, put the task_id in-between of these two lists.
+
+Save it and hop in to browser.
+
+Refresh the DAG.
+
+Great, the error is removed.
+
+Go to graph view.
+
+Seeing from the graph view, I don’t think it needs any extra explanation as the use
+
+case is just in front of us.
+
+After putting a Dummy operator in-between, the two lists, now every task in list 1 knows
+
+that it has to give control to dummy operator, and from dummy operator the control will be
+
+passed on to the second list.
+
+Basically, with Dummy operator the tasks pointings are now aligned.
+
+Right?
+
+And guys please understand that it’s not like that only dummy operator can be used
+
+here.
+
+As per your use case any task can be used here to align the tasks pointings but those
+
+tasks would also do their own functionalities like instead of dummy operator you could have
+
+used a Bashoperator with some print command.
+
+No doubt that bashoperator would resolve the conflict but alongside, it is also going to
+
+run a print command which we do not want.
+
+That is why dummy operator is the best choice here.
+
+Not only this, dummy operator can be used for testing upstream and downstream dependencies
+
+as well.
+
+Where after testing you can replace the dummy operator with the true operator.
+
+So that’s it for dummy operator.
+
+and in this course, I guess we are definitely going to use it to handle some similar situations
+
+explained above.
+
+Thank you.
+
+In this lecture we will learn about a very simple, yet powerful Airflow operator called
+
+‘DummyOperator’.
+
+Starting with its definition, according to Airflow’s official documentation, a Dummy
+
+operator is an operator that literally does nothing.
+
+Yes, you heard it right, it does nothing.
+
+Unlike other Airflow operators that are built to perform some specific tasks, Dummy operator
+
+is sort of a different operator that is used to only group tasks in a DAG.
+
+To showcase the use case of Dummy operator, let me describe an example.
+
+So guys suppose you have a DAG where you have tasks arrangement like this.
+
+Here you have two lists of tasks.
+
+tasks t1 through task t5 are in one group and task t6 through task t10 are in second
+
+group.
+
+Tasks in each group does not have any operational dependency but it is mandated that tasks from
+
+list one will execute first, then from list two.
+
+Got it.
+
+Let me even show you the DAG file of it.
+
+This is a very basic DAG with 10 tasks using BashOperator.
+
+The first 5 tasks are printing Date and the tasks from second set are simply printing
+
+Hi.
+
+Anyways, Now the problem with kind of arrangement is, if you would run this DAG you will get
+
+an error of unsupported operand type for lists.
+
+This is what you will get.
+
+Why because, the individual tasks in the first list do not know to which task they should
+
+map to in second list.
+
+So Suppose on DAG execution, task t1 executed first.
+
+Now after its successful completion, to whom should it give control to, to which task from
+
+second set it should lead to?
+
+Should it be task t6, t7 or any other task from 2nd list.
+
+similarly, all the tasks of list 1 would be in same situation.
+
+They would not know after their successful completion to which task they should give control to. Now To resolve these such conflicts, Dummy operator
+
+comes into play.
+
+Before explaining, lets embed the dummy operatorin this DAG.
+
+First, import it from the Airflow operators.
+
+After import, create a new task ‘td’ with DummyOperator.
+
+it’s pretty much simple, an operator with just task_id and dag instantiation.
+
+That’s it.
+
+No more parameters as it literally does nothing.
+
+And now after defining, put the task_id in-between of these two lists.
+
+Save it and hop in to browser.
+
+Refresh the DAG.
+
+Great, the error is removed.
+
+Go to graph view.
+
+Seeing from the graph view, I don’t think it needs any extra explanation as the use
+
+case is just in front of us.
+
+After putting a Dummy operator in-between, the two lists, now every task in list 1 knows
+
+that it has to give control to dummy operator, and from dummy operator the control will be
+
+passed on to the second list.
+
+Basically, with Dummy operator the tasks pointings are now aligned.
+
+Right?
+
+And guys please understand that it’s not like that only dummy operator can be used
+
+here.
+
+As per your use case any task can be used here to align the tasks pointings but those
+
+tasks would also do their own functionalities like instead of dummy operator you could have
+
+used a Bashoperator with some print command.
+
+No doubt that bashoperator would resolve the conflict but alongside, it is also going to
+
+run a print command which we do not want.
+
+That is why dummy operator is the best choice here.
+
+Not only this, dummy operator can be used for testing upstream and downstream dependencies
+
+as well.
+
+Where after testing you can replace the dummy operator with the true operator.
+
+So that’s it for dummy operator.
+
+and in this course, I guess we are definitely going to use it to handle some similar situations
+
+explained above.
+
+Thank you.

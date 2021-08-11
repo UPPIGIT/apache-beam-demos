@@ -1,0 +1,37 @@
+Next are Undeads.
+
+Undeads are just on the opposite side of Zombie tasks.
+
+Where zombie tasks were those whose status in metadata was running but in actual they
+
+were not getting execute by workers, Undead processes on contrary are those tasks for
+
+which scheduler is getting the heartbeat from workers but Airflow isn’t aware of that
+
+task and doesn’t have a ‘running’ status in the database.
+
+Basically, this kind of mismatch occurs when the state of Airflow database is altered by
+
+some external manual actions.
+
+To these types of tasks you can either say they are in undead state or directly call
+
+them as undead tasks.
+
+And How Airflow deals with Undead task.
+
+It terminates them.
+
+Let me present an example of it.
+
+I will run the tutorial DAG again.
+
+By doing this basically you would be deleting its entry from metadata.
+
+Task has been shut down leading it to in undead state.
+
+Refresh it and it is terminated.
+
+This much only for Undeads.
+
+See you in next lecture

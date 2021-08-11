@@ -1,0 +1,426 @@
+Installation :
+------------------------
+
+https://www.docker.com/
+
+https://docs.docker.com/docker-for-windows/install/
+
+https://docs.docker.com/docker-for-mac/install/
+
+
+So guys, I think we have covered enough of the theory part and you are now well familiar
+
+with the Airflow concept.
+
+Now it’s time to warm up our fingers and start practicals.
+
+But to do that, first we need to install Apache Airflow on our system.
+
+There are few ways of installing Airflow.
+
+One if the conventional way is to install it on Ubuntu OS.
+
+Or in case, you don’t have Ubuntu and work on Windows or Mac, then you will have to first
+
+install a Virtual Machine on your system, and then on top of that machine install Ubuntu, using
+
+the ‘pip’ command.
+
+Right?
+
+Guys if you chose installing Airflow in Ubuntu using pip, things won’t stop here as Airflow
+
+is just a scheduler and not the executor.
+
+Means if you are scheduling a Hive script then to execute those scripts, your system
+
+should have Hadoop and Hive setup as-well.
+
+Similarly, Python, SQL, Spark, or any type of script you want to run, you should have
+
+the corresponding full-fledged setup installed on your system and which I believe is very-very
+
+long and hectic task and most of you will remain stuck at installation lecture only. Problem? well not!
+
+As a solution, I came up with a very easy approach and which is very famous these days
+
+i.e.
+
+‘Installing Airflow using Docker’.
+
+What is this Docker, I believe most of you would know but still I will give you a brief
+
+knowledge of it.
+
+Docker is a containerization platform, and a kind of virtualization technology for building
+
+applications based on containers.
+
+It is designed to make it easy to create, deploy, and run applications as portable in
+
+self-sufficient containers.
+
+Using Docker, all the application packages, libraries, and its dependencies are packed
+
+up as one package in the form of Docker container which ensures that our application works seamlessly
+
+in any environment no matter on which machine they are running on.
+
+Because of this containerization technique, Docker containers are sometimes referred to
+
+as ‘light-weight VMs’.
+
+If you don’t want to go into any technicalities of docker you just assume it as a compressed
+
+version of a Virtual machine which is small in size and very easy to use.
+
+Having this in mind, let’s install Docker.
+
+Guys you can install Docker on most of the operating systems like Ubuntu, Windows, or
+
+Mac.
+
+Docker supports all of them.
+
+But before you install, I will recommend you to please check the system requirements for
+
+it.
+
+This check is necessary as to install Docker there can be some issues for the versions.
+
+I am giving you the link of it in the ‘Resources Tab’ of this lecture.
+
+I would also recommend you to surf the provided link more as it contains more info on installation
+
+for various OS.
+
+So you can pause this video and check what docker package suits for your System.
+
+Alright, so if you have surfed through that link, you would have got to know that there
+
+are two different setups.
+
+One is ‘Docker Desktop’ for the latest versions of Mac, or Windows 10 Pro and Enterprise
+
+edition, and the second is ‘Docker Toolbox’ for the older versions of Mac and Windows
+
+10 Home or less.
+
+I have windows pro on my system so I will be installing Docker Desktop.
+
+Actually, Docker Toolbox is a legacy desktop solution.
+
+It is created just to support the systems that do not meet minimal system requirements
+
+for the Docker desktop App.
+
+In fact their official documentation itself recommends to switch to Windows pro for better
+
+and hinder less functioning.
+
+So I would say that if you have windows pro then it’s the best.
+
+If No, don’t worry, I have attached a step-by-step installation guide in the next lecture which
+
+will guide you to download and install Docker toolbox on lower versions of windows or mac.
+
+Anyways, let us install Docker on Windows 10 PRO Edition.
+
+Open up the browser and go to the Docker’s official website Docker.com.
+
+This is how their website look like.
+
+Here you can find all the information and resources regarding Docker.
+
+Why Docker?, Products, Solutions, Customer Resources, You can browse if you want.
+
+To download Docker, go to ‘Products’ and click on ‘Desktop.
+
+‘Download Docker for Mac and Windows’.
+
+In order to start download, you will first need to login to your Docker account.
+
+So you can either sign in from here.
+
+Or in case if you don’t have Docker account, then click on this sign-up button and create
+
+your account by entering your username which they call as ‘Docker ID’ and your email and password.
+
+I will sign in mine
+
+After sign in, click on this download button again. It will start the down load process.
+
+Guys the installation for Mac is more or less same as of Windows, but you can definitely
+
+take reference from their official link which is this one.
+
+I'm sharing it in the Resources tab.You can go through it.
+
+I will cancel this because I have already downloaded it on my system.
+
+I will directly go to Downloads folder open Docker installer
+
+It is downloading some packages.
+
+and under the ‘Configuration’ it will first ask you add shortcut, check it, click
+
+next.
+
+Then it will start unpacking the files and will install them.
+
+This step may take some time, so you have to wait.
+
+I am skipping this video to the point where installation is complete.
+
+The installation succeeded.
+
+Once the installation is finished, to get the things ready it will ask you to log out,
+
+Do it.
+
+After you log into the Windows again, open Docker Desktop
+
+Guys since you would be Docker into your system for the first time
+
+it may ask the permission to enable Hyper-V and Container features.
+
+so you have to click ‘Ok’.
+
+After that your computer will restart automatically to make the changes.
+
+After the restart, when you click on this Docker Desktop,
+
+here it will say ‘Docker desktop is now starting.
+
+This may take few minutes to come up.
+
+so we have to wait.
+
+Kudos your Docker Desktop is now up and running.
+
+You have successfully installed Docker on your system.
+
+Guys Docker has very less thing to do with its UI (as per our Airflow requirements),
+
+so anything we will do with Docker will be using docker commands.
+
+So we will run a very simple Docker command to check its version
+
+open up the Windows PowerShell
+
+and type ‘docker –version’.
+
+It will output you the Docker version installed on your system.
+
+In my case it is 19.03.4.
+
+Along with docker it has also installed one other important docker feature ‘docker-compose’
+
+tool.
+
+Let’s check that also with docker-compose --version
+
+it is 1.24.1.
+
+Great! So with this our Docker setup is complete, and we are all set to install Airflow over
+
+it.
+
+
+So guys, last we installed Docker on our system.
+
+In this video, we will use Docker to get Apache Airflow and all other necessary components
+
+like Postgres database, MySQL, Redis etc. installed onto it.
+
+Now again to get Apache Airflow from the Docker itself we have two ways.
+
+Atually, they are not much different, as the end result will remain the same.
+
+But yeah, we can say there are two roads leading to same destination – Apache Airflow.
+
+One being a long and somewhat difficult and the other being an easy path.
+
+Giving you a short trip of both methods.
+
+The first method is installing Airflow and all other components one by one in Docker
+
+CLI in this powershell.
+
+Like to install Airflow we will first pull its image from docker-hub using this command.
+
+And after pulling the images we will manually add various services, environment variables
+
+and other stuff through window powershell by passing parameters in to the bash.
+
+Then again to install Postgres, Redis, or any other component we have to pull its corresponding
+
+image from docker hub, add services in it and install.
+
+Moreover, in multi-container setup we have to create connections amongst them manually
+
+which is quite a difficult task, I guess.
+
+So for these reasons we won’t go by this approach.
+
+The second method which we will go by is using a tool called ‘docker-compose’.
+
+Docker compose is a tool for defining and running multi-container Docker applications.
+
+In this method, we define a compose file written in YAML, inside which we will write down about
+
+all the required images and configurations for our application like the database we gonna
+
+use, its variables like username, password etc things.
+
+After writing the requirements we run that compose file in Docker to build that specified
+
+application environment for us in 1 shot.
+
+Also, this time we don’t have to worry about the connections between containers.
+
+Everything will be done automatically.
+
+Now, let me tell you an interesting thing.
+
+Actually, you don’t even have to create that compose file.
+
+Puckel, who is the top contributor of Airflow project has already created that compose file
+
+and provided to us in a git repository.
+
+We just need to clone that project in our setup.
+
+So go to this GitHub link.
+
+Here we have puckel’s repository for docker-airflow.
+
+Download it as a ZIP.
+
+I’ve already extracted the files. So I will directly go that folder. So this is the folder you will get after extraction.
+
+Inside this we have various files and folders written for Docker Airflow.
+
+These are the 2 compose files which I was talking about.
+
+One is for Celery executor and the second one is for Local executor.
+
+Let us open this Local executor compose file.
+
+See, inside it, we have all the configurations written that are required for our Airflow
+
+setup written in YAML.
+
+As of now I am specifying only 2 services in the compose file.
+
+1 is postgres and the 2nd is webserver.
+
+You can see Postrges with its environment variables like username, passwords.
+
+Next we have webserver and its port 8080.
+
+Volume mount… and other stuff.
+
+Guys this is just a sneak peek of this file.
+
+Don’t worry, we will explore both the compose files in much details in the upcoming lectures.
+
+For the moment, just keep in mind that any services that we are gonna use in our Airflow
+
+application, will be configured from here.
+
+Alright so that was our compose file.
+
+Now let’s run this file in Docker and start the Airflow services.
+
+Hop up to PowerShell.
+
+But yeah before that we have to share a drive where we are going to keep all our projects
+
+with docker.
+
+For that click on this docker icon, click on settings then shared folder and then from
+
+this list choose the drive.
+
+I will be keeping my projects in C drive.
+
+Click on apply.
+
+Okay, so back to PowerShell to run compose file.
+
+Go to the directory path where compose file is located.
+
+Now to run compose, type ‘docker-compose -f’ (means file) and then specify the YAML
+
+file name i.e., docker-compose-LocalExectuor.yml and at last is the optional parameter ‘-d’,
+
+which tells Docker to hide the logs and run the container in background.
+
+docker-compose -f docker-compose-LocalExectuor.yml up -d
+
+
+As output, it will just print the container ID after successful run.
+
+So it is pulling the mentioned images from docker-hub.
+
+Both images are around 850 mb in size.
+
+
+
+Yeah see our image downloads is complete.
+
+Its quire strange in windows but this is how it is for PowerShell.
+
+Excellent!
+
+Status is ‘Done’.
+
+Airflow is installed in our system.
+
+If you want to check what all images are present on your system then you can run this command.
+
+docker images.
+
+See you have 2 images as of now which you just pulled through compose file.
+
+And if you want to list the running containers use docker ps….
+
+So currently airflow and postgres containers are running.
+
+Now guys Adding more into compose file, suppose at some moment, you need to add Redis into
+
+your application, then to add it, all you need to do is just write the correct configurations
+
+for Redis in the compose file like this.
+
+Just like postgres variables, you can add username, pwd etc too.
+
+But as of now I will just provide the service name.
+
+And then, run the docker-compose file again in PowerShell.
+
+On executing, docker will check for any changes you have made to the compose file.
+
+If it detects some changes, then it will get those changes into your application.
+
+In short, all you need is to just make the required configuration changes in YAML file
+
+and rest, leave it for docker compose.
+
+It itself will do the rest stuff of pulling the image, setting variables, build the networking
+
+amongst different containers.
+
+Okay so now let’s hop up to the browser at the same address we defined in compose
+
+YAML file localhost 8080.
+
+Basically, this is the port where Airflow’s UI is hosted.
+
+This is the first look of Airflow’s UI and we got a DAG named ‘tutorial’ in the DAGs
+
+list, Actually this is the default DAG which is already been created for us as an example.
+
+We will look into this DAG and also create our own DAGs in the coming lectures.
+

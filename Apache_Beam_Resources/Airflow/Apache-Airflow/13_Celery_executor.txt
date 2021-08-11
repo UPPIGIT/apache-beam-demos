@@ -1,0 +1,204 @@
+So guys, in the previous lectures we saw Airflow executors running in single node system.
+
+But we all know that they have their own limitations and cannot be used in Real-time production
+
+projects where we have huge number of data pipelines with growing complexities.
+
+So 1 node won’t be sufficient to handle those many DAGs and you definitely would have
+
+to think of scaling up your Airflow environment to a flexible and scalable architecture.
+
+i.e., to the ‘multi-node cluster architecture’.
+
+In multi-node cluster, the workload can be distributed amongst multiple workers on different
+
+machines.
+
+And to run Airflow on a distributed cluster system, Airflow has to be configured with
+
+the Celery executors.
+
+So Welcome to this lecture where we will see what is a Celery executor and how to use it
+
+with a distributed multi-node cluster setup.
+
+But first of all, let me shout out some formal points on it.
+
+Celery executor is one of the best way you can scale out the number of workers.
+
+Yes.
+
+We know it.
+
+It makes it easy to scale out workers horizontally when you need to execute lots of tasks in
+
+parallel.
+
+Using Celery executor, you can distribute task load amongst different multiple worker
+
+machines to take task parallelism to another level.
+
+Celery is an asynchronous task queue, based on distributed message passing and for that,
+
+at the backend it uses a message queuing framework such as RabbitMQ, or Redis to manage communication
+
+between multiple task services.
+
+same like Local executor, Celery also requires a backend database to store your tasks results.
+
+Databases like MySQL, or Postgres.
+
+Alright.
+
+Most of the things we already knew, let’s now load our Airflow with Celery executor.
+
+To work with celery executors, you need to define a separate compose file with its exclusive
+
+derivatives but you don’t have to worry about it as puckel has already written it.
+
+We can directly use this docker compose file to setup our Airflow with requisite Celery
+
+services.
+
+guys this compose file is similar to that for Local executor, but to run the Celery,
+
+there are some additions done.
+
+Starting with, we have the messaging queuing service.
+
+Puckel has used Redis, you can use RabbitMQ too.
+
+Database is same Postgres.
+
+Executor would be celery.
+
+You can change this property in airflow’s configuration file as well.
+
+Then we have an important property ‘fernet_key’.
+
+Guys by default, Airflow save the passwords for connection in a plain text within the
+
+metadata database.
+
+But we can install and use the ‘crypto’ package to encrypt the data with this fernet
+
+key.
+
+Fernet guarantees that a message encrypted using it cannot be manipulated or read without
+
+the key.
+
+Any encrypted message will require this fernet key to decrypt that message.
+
+Folders are mounted in the same way.
+
+Yeah, Next is the flower service.
+
+Guys Flower is a web-based tool for monitoring Celery workers and task progress.
+
+So Flower service being installed, you will be able to see the task executions in separate
+
+Flower UI, other than the Airflow’s UI.
+
+So you can access the Flower UI at port 5555.
+
+Now, as we know from the multi-node Airflow architecture, in these setups, scheduler and
+
+worker run as a separate instance, so we have separate derivatives for those services as
+
+well.
+
+This is for Scheduler and this is for worker.
+
+The properties in both of them you would see is same as of any other service.
+
+Okay so that’s how the compose file for Celery executor looks like, now let’s load
+
+the Airflow instance with this compose file.
+
+In the PowerShell, notice that we are running Celery executor compose file.
+
+This time, it is pulling a Redis image from Docker.
+
+Let us wait for some time to have a download. Done!
+
+If I list the running containers.
+
+See, this time since we are running Airflow in distributed mode with Celery executor,
+
+we have a separate running container for each Airflow service.
+
+Like this is for worker, this one for scheduler, and so on.
+
+So… lets go to the browser and run our favourite ‘tutorial’ DAG.
+
+Again, please note that I have removed any operator relationships from the DAG.
+
+Enable it and trigger it.
+
+Refresh, great, it has successfully completed.
+
+Go to the Gantt view, you can see that with using Celery executor, the tasks have done
+
+a parallel execution.
+
+For Celery, to monitor the workers and task progress, we have flower service installed.
+
+So let’s have a quick look on that too.
+
+To access, go to localhost:5555.
+
+This is how it looks like.
+
+On the Dashboard, we have the worker name, its status, active, and we have columns related
+
+to task statuses. This online status .
+
+specifies the worker node is healthy Then this ‘Active’ column shows you the real-time data about number of active tasks currently
+
+being executing.
+
+Processed, the number of tasks that are carried out till now.
+
+number of tasks failed, succeeded, retried.
+
+As currently we have only 1 node in my system so that’s why only 1 row is there.
+
+If you would have used a actual cluster with n number of nodes then there will be each
+
+row for a worker in the cluster.
+
+Anyway, lets the tutorial DAG one more time.
+
+Flower UI will give you the real-time data about tasks without any need to refresh the
+
+page.
+
+Going to this tasks section will give you more details
+
+about the tasks.
+
+like when the task was received, and at what time it was started to execute.
+
+The time took for its completion, worker node that has carried out that task and all these things.
+
+One thing I would like to add here is, if I go to airflow.cfg file.
+
+Under the celery configurations we have a property called worker_concurrency.
+
+Worker_ concurrency determines how many tasks a single worker can process.
+
+By default, it is set to 16 means that a single worker node can 16 tasks at once.
+
+You can tweak with this number as per your needs.
+
+But please be careful, in case if you increase worker_concurrency, then you have to make
+
+sure that your worker has enough resources to handle that load otherwise it may go down.
+
+and with this I would say That’s all for celery executor.
+
+
+Search all course questions
+Search all course questions
+Loading...

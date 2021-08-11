@@ -1,0 +1,123 @@
+Let us now understand what are variables in Airflow and figure out how they are different
+
+from the variables that we use normally in programming.
+
+Okay so what are variables in general.
+
+I am sure most of you guys must have some sort of programming background and you all
+
+would be aware of what variables are, so it doesn’t require much explanation.
+
+In short, I will say is variable is a value that can change, depending on conditions or
+
+on information passed.
+
+Talking about Variables concept with Airflow perspective:
+
+Variables are a generic way to store and retrieve some content in the form of key value pair.
+
+Variables can be easily created, updated or deleted from the Airflow UI.
+
+Variables are stored and of course retrieved from Airflow metadata database.
+
+Since they are stored in metadata so Airflow variables have a scope in all the listed DAGs.
+
+This is an important point so I will explain this point in detail.
+
+Guys Airflow variables are not bound to only 1 DAG.
+
+Once created, they can be used in any of the DAGs.
+
+No doubt, you can create normal Python variables within your DAG file but the scope of that
+
+variable is only limited to that DAG file only.
+
+Python variables set in 1 DAG can’t be used in another DAG, whereas Airflow variables
+
+can be used throughout all the DAGs.
+
+I believe you got the difference.
+
+Let me share a scenario with you.
+
+Suppose you have few DAGs in your airflow app and you need to share some common value
+
+in all these DAGs.
+
+Let say some file path, storage path or something.
+
+Now one way is to declare the same variable in each DAG file, which is quite repetitive
+
+and let say, at some stage you need to change that value, you have to go to each DAG and
+
+change the value of that variable one by one, which is of course not the best approach.
+
+This is the place where Airflow variables comes handy.
+
+In Airflow’s UI, you can define your variable in a key value pair and then use it across
+
+all the DAGs.
+
+Having said that, Now let’s see how we can actually create those variables in UI.
+
+Alright so under the Admin tab click on ‘Variables’.
+
+In order to create variables we have two options, either way, you can write down your variables
+
+in a json file and can upload that json file here or we can create the variables from this
+
+‘create’ button.
+
+Open it.
+
+Here we have to write down our variable in a key value form.
+
+So variable name let say… ‘source_path’ and value be like ‘usr/local/airflow‘.
+
+And save it.
+
+Simple.
+
+Variable got created.
+
+now use them in Dag file.
+
+To show you its use case, I have two DAG files – variable.py and variable1.py, both performing
+
+a very simple of printing the same file path.
+
+Since it is a common file path so what we can do is, instead of hardcoding it we can
+
+use that variable what we just created.
+
+To use variables in DAG first we need to import it from airflow.models.
+
+Now replace this with variable.
+
+In curly braces, type var means variable then value and then
+
+the variable name i.e source_path.
+
+And similar to this I will copy and paste the same thing in second DAG great!
+
+DAGs are ready.
+
+Let’s run them in UI.
+
+Both are completed.
+
+Open the logs for variable1 DAG.
+
+Yeah, we got the source_path value from variable, and similarly, if I open the logs for second
+
+DAG, here also we got the same path.
+
+Excellent!
+
+Now guys in any case if you wish to change your source_path, rather than changing it
+
+in each DAG file, all you have to do is just go to the Variables section and change the
+
+value.
+
+That’s it. So Guys this much for variables. I will see you in the next lecture.

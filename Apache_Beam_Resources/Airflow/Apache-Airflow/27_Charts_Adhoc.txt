@@ -1,0 +1,260 @@
+Next topic in Data Profiling is Charts.
+
+In the last lecture we ran custom SQL queries on metadata tables and got the results in
+
+tabular form, which is surely good, but it would be more interactive if we could see
+
+those results in form of graphs.
+
+It would help you to understand and present the results in a better way.
+
+Airflow provides you this provision to represent any query’s results in a graphical manner
+
+with the help of charts option.
+
+Chart is a simple UI, built on top of flask-admin that allows us to build data visualizations
+
+easily on them.
+
+Let’s try them.
+
+Under the Data profiling navigation, click on Charts. we already have a default template
+
+built for us.
+
+Anyways, lets create a new one.
+
+This is the small form that you need to fill to custom create your charts.
+
+Starting with label, this is the label name you want to t ag this chart with.
+
+let it be demo_chart.
+
+Then we have the ‘Owner’ field that can help you in searching your chart templates
+
+in case you have large number of templates.
+
+I will keep it empty.
+
+Next is ‘Connection Id’.
+
+This is important.
+
+Guys same like Ad hoc queries, here also, first you need to select the connection id
+
+of the database whose tables you are going to query.
+
+I will select airflow_db.
+
+Next is ‘Chart Type’.
+
+For displaying the results, Airflow gives us a choice and provides us with a number
+
+of different chart types.
+
+We can choose from Line chart, Spline, Bar, Column, and more.
+
+I will select Bar chart.
+
+Next it is asking whether to show the underlying fetched datatable along with the charts?
+
+yes.
+
+Check it.
+
+Then should it cast the X axis as a date field?
+
+Yes.
+
+Next whether to log Y log scale?
+
+Check it too.
+
+Then, in the results page should it display the ran SQL statement.
+
+Okay no problem.
+
+Chart height.
+
+Let it be the default 600.
+
+SQL Layout you are going to use.
+
+This will depend upon the type of table you are extracting data from.
+
+I will keep it as default.
+
+And here we will write the actual SQL statement.
+
+Let’s create a chart of tasks that are executed in the tutorial DAG. this is a very simple
+
+SQL statement that selects dag-id, execution-date and total count from ‘task_instance’ where
+
+dag_id is tutorial.
+
+Last are the default parameters accepted in a key-value form.
+
+I will keep them empty.
+
+Save it.
+
+great.
+
+So with this our template for charts has been created.
+
+The good thing about these charts is, you can anytime create, modify and can share them.
+
+Alright, to get the charts, click on the label.
+
+Here we go.
+
+We got our results, in a well-prepared Bar Chart form.
+
+on the Y axis of chart is a count of tasks and on the X axis is the date on which the
+
+tasks ran. and here we have the dag_id tutorial.
+
+By just seeing the graph you can quickly tell that on 23rd December 3 tasks were executed,
+
+and same, on 24th and 25th, total 3 tasks were executed.
+
+and since in the form we checked to show the SQL statement so here it’s showing us
+
+the same query.
+
+And here also, since we had checked to display the data table, this is the resultant table
+
+from which this chart has been created.
+
+That’s all for the charts.
+
+Next topic in Data Profiling is Charts.
+
+In the last lecture we ran custom SQL queries on metadata tables and got the results in
+
+tabular form, which is surely good, but it would be more interactive if we could see
+
+those results in form of graphs.
+
+It would help you to understand and present the results in a better way.
+
+Airflow provides you this provision to represent any query’s results in a graphical manner
+
+with the help of charts option.
+
+Chart is a simple UI, built on top of flask-admin that allows us to build data visualizations
+
+easily on them.
+
+Let’s try them.
+
+Under the Data profiling navigation, click on Charts. we already have a default template
+
+built for us.
+
+Anyways, lets create a new one.
+
+This is the small form that you need to fill to custom create your charts.
+
+Starting with label, this is the label name you want to t ag this chart with.
+
+let it be demo_chart.
+
+Then we have the ‘Owner’ field that can help you in searching your chart templates
+
+in case you have large number of templates.
+
+I will keep it empty.
+
+Next is ‘Connection Id’.
+
+This is important.
+
+Guys same like Ad hoc queries, here also, first you need to select the connection id
+
+of the database whose tables you are going to query.
+
+I will select airflow_db.
+
+Next is ‘Chart Type’.
+
+For displaying the results, Airflow gives us a choice and provides us with a number
+
+of different chart types.
+
+We can choose from Line chart, Spline, Bar, Column, and more.
+
+I will select Bar chart.
+
+Next it is asking whether to show the underlying fetched datatable along with the charts?
+
+yes.
+
+Check it.
+
+Then should it cast the X axis as a date field?
+
+Yes.
+
+Next whether to log Y log scale?
+
+Check it too.
+
+Then, in the results page should it display the ran SQL statement.
+
+Okay no problem.
+
+Chart height.
+
+Let it be the default 600.
+
+SQL Layout you are going to use.
+
+This will depend upon the type of table you are extracting data from.
+
+I will keep it as default.
+
+And here we will write the actual SQL statement.
+
+Let’s create a chart of tasks that are executed in the tutorial DAG. this is a very simple
+
+SQL statement that selects dag-id, execution-date and total count from ‘task_instance’ where
+
+dag_id is tutorial.
+
+Last are the default parameters accepted in a key-value form.
+
+I will keep them empty.
+
+Save it.
+
+great.
+
+So with this our template for charts has been created.
+
+The good thing about these charts is, you can anytime create, modify and can share them.
+
+Alright, to get the charts, click on the label.
+
+Here we go.
+
+We got our results, in a well-prepared Bar Chart form.
+
+on the Y axis of chart is a count of tasks and on the X axis is the date on which the
+
+tasks ran. and here we have the dag_id tutorial.
+
+By just seeing the graph you can quickly tell that on 23rd December 3 tasks were executed,
+
+and same, on 24th and 25th, total 3 tasks were executed.
+
+and since in the form we checked to show the SQL statement so here it’s showing us
+
+the same query.
+
+And here also, since we had checked to display the data table, this is the resultant table
+
+from which this chart has been created.
+
+That’s all for the charts.
+

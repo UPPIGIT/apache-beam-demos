@@ -1,0 +1,57 @@
+Welcome to this another lecture of advanced Airflow concepts.
+
+In this lesson we will learn about SubDAGs.
+
+To start with, let’s take a reference of a very common ETL workflow.
+
+In any ETL workflows we have three basic jobs to perform.
+
+Extract the data from various databases, transform it, and then load that data into one or more
+
+tables.
+
+Guys if you analyse some ETLs, you will find most of the its workflows and their DAGs usually
+
+consists of patterns that often repeat themselves.
+
+Like here in also, we can classify this ETL into, some start task, then a set of tasks
+
+performing a shared pattern of extracting data from source tables.
+
+Then a transform or aggregation task, and last, again it has few repetitive tasks to
+
+load data into varied tables.
+
+Guys as a whole, this DAG looks quite messy and complex and it becomes difficult for any
+
+person to understand it.
+
+In order to convert these types of DAGs having parallel repeating patterns into ‘visually
+
+better looking and less complex DAG’, Airflow uses the concept called ‘SubDAGs’.
+
+With the use of SubDAG, this messy DAG can be transformed into this – a nice simple
+
+looking and evenly ordered DAG.
+
+No doubt, this is the same DAG with same functionality, but all the parallel repetitive tasks are
+
+merged into one small unit representing a subset of DAG called SubDAG.
+
+So the first SubDAG ‘extract_tasks’ resembles all those data extraction tasks and the ‘load_tasks’
+
+represents all the loading task.
+
+Guys please understand that, as in whole, this new DAG with SubDAGs will behave and
+
+execute the same way like original complex DAG only because Airflow treats any SubDAG
+
+just like an individual task, so there will be no difference at the task execution level.
+
+They all will perform the same original way.
+
+SubDag concept was introduced just for the developers ease so that they see a cleaner
+
+DAG.
+
+Okay so now that we know what a SubDAG is, let’s see it in practice.

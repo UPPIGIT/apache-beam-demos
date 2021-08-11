@@ -1,0 +1,123 @@
+So guys, In previous lectures, I was using a term ‘Operators’ again and again and
+
+we even saw a BashOperator in the default DAG file.
+
+In this lesson we are going to discuss operators’ concept in detail.
+
+So what is the term ‘Operator’?
+
+An operator represents a single task in a workflow that helps to carry out your task.
+
+Like I mentioned in terminologies lectures, DAGs only describe ‘how’ to run a workflow
+
+and they do not perform any actual action.
+
+On the other side, operators determine what actually gets to be done when your DAG runs.
+
+Like in ‘tutorial’ DAG, there we had 3 tasks performing some bash commands.
+
+To run those commands in reality we had used ‘BashOperator’ there.
+
+Now talking about some key points of operators.
+
+Operators are usually atomic.
+
+With the term ‘atomic’ means that they can stand on their own and they do not need
+
+to share resources with any other operators.
+
+But keep in mind that this atomicity property need not to be always true.
+
+Operators are idempotent.
+
+Which means that your operator should always produce the same result no matter of how many
+
+times it is run.
+
+Once an operator is instantiated it is referred to as a task.
+
+There are different kinds of Airflow operators available out there like sensor operators,
+
+transfer operators… and they all are derived from the Airflow’s BaseOperator.
+
+As mentioned above, operators are atomic and do not share information between them.
+
+But in case if two operators need to share some information, they can share it by using
+
+an Airflow feature called ‘Cross-Communication’ or ‘XCom’ . On this, what are these XComs and how do they operate, we will talk about
+
+later lecture.
+
+Now talking about its categories, Operators (in general) are classified into 3 main categories.
+
+‘Sensor Operators’, ‘Transfer Operators’, and Action Operators’ or you can say just
+
+‘Operators’.
+
+Starting with sensor operators.
+
+Sensors are certain type of operators that will keep running until a certain criterion
+
+is met.
+
+Like in your DAG you may have a task which needs to wait for input file to come at a
+
+certain location.
+
+Sensor operator will keep on checking that location on regular intervals and will only
+
+move ahead once the required file arrives.
+
+Not only file, sensor operators can be used in any case where you need some event to get
+
+happened before other tasks can start.
+
+Its Examples include an HdfsSensor waiting for a file landing in HDFS, a normal filesensor
+
+etc.
+
+Infact, we have a separate lecture on FileSensors demo in this course.
+
+Then Transfer operators as the name implies, moves the data from one location to another.
+
+We have transfer operators like MySqlToHiveTransfer operator that moves data from MySQL to Hive
+
+location and S3ToRedshiftTransfer operator to transfer the files from s3 to Redshift
+
+system.
+
+Then we have just ‘Action operators’ or simply called as operators.
+
+These operators are used to perform various actions according their type.
+
+The operator name itself will tell you what action it is going to perform.
+
+The BashOperator that was used is tutorial example to trigger Bash commands is one such
+
+example of Action operators.
+
+Not only BashOperator we have more action operators like PythonOperator to call an arbitrary
+
+python function, then we have HiveOperator to execute any Hive script, BigQueryOperator
+
+that executes Google BigQuery SQL and many more.
+
+Apart from these operators, Airflow provides us a number of prebuilt operators for many
+
+of the common tasks.
+
+Throughout this course we will be using many operators in different lectures.
+
+Not only prebuilt, you can even custom built your operator depending upon your particular
+
+task needs.
+
+That’s what make the Apache Airflow an extensible framework, you can extend it to execute any
+
+kind of job or task within your DAG.
+
+So guys this was like a theoretical overview of operators.
+
+As we go along with this course.
+
+We will learn how to implement different operators in our DAG file as per our use case.

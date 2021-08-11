@@ -1,0 +1,88 @@
+Let us understand about 2 more concepts in Airflow that are Zombies and Un-deads and
+
+will learn how Airflow handles dead tasks.
+
+These are just architectural concepts with no practicals.
+
+Alright, Now guys as you know during the lifecycle of a task, task instances die all the time.
+
+They may die, whether as a part of their normal life cycle, or sometimes task dies unexpectedly
+
+due to resource crunch, failed I/O operations etc there can be n reasons.
+
+That is ok but the primary question here is What Airflow is going to do with those tasks.
+
+Keep this question in mind as you will get its answer in a bit.
+
+Let me recall the architecture of Airflow.
+
+We know that as soon as scheduler send tasks to worker for execution it sets the state
+
+of those tasks to ‘running’ status in the metadata and workers start executing those
+
+tasks.
+
+Right?
+
+Now consider a scenario where the scheduler has sent a task to some worker node and had
+
+set its status to ‘running’ in metadata.
+
+Meanwhile, due to some unexpected reason, that worker node gets rebooted
+
+or has been killed externally.
+
+What will happen then?
+
+Since the status of that task is set to ‘running’ in metadata, scheduler will think that the
+
+assigned worker node is still working on the task but which actually is down.
+
+This condition may lead your setup into an unexpected situation and till you manually
+
+intervene, the whole job will be in running state.
+
+These such tasks are given an interesting name by Airflow – Zombie tasks.
+
+Now comes the answer to our question.
+
+How Airflow handles Zombie tasks.
+
+Airflow uses the heartbeats to handle Zombie tasks.
+
+The basic idea around it is that, periodically, the worker node has to send heartbeat to scheduler
+
+so that scheduler has knowledge from time to time that the assigned worker is busy and
+
+is doing its job on the assigned task.
+
+Where Heartbeat contains information like running dag_id, the task_id of task which
+
+it is executing, its status and all.
+
+Now in the same failure scenario, where the task status is set to ‘running’ and the
+
+worker is down.
+
+Worker won’t be able to send heartbeat to scheduler.
+
+Now knowing that there is an absence of heartbeat from a worker, scheduler will kill all the
+
+tasks assigned to it.
+
+This whole process of killing tasks which have ‘running’ status in metadata but
+
+their heartbeat is absent is known as Zombie killing.
+
+And the period after which the worker sends heartbeat can be configured in airflow.cfg
+
+file from this property.
+
+As per the current settings worker will send the heartbeat to scheduler after every 300
+
+seconds.
+
+That’s all for Zombies.
+
+See you in next lectures with Undead tasks.
+

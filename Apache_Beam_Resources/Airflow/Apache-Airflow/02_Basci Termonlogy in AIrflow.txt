@@ -1,0 +1,121 @@
+Basci Termonlogy in AIrflow
+-------------------------
+
+So guys before I go further into architecture or any practicals, I want you to be very comfortable and familiar with the basic terminologies used in Airflow as I will be using them throughout
+the course, so it’s better I explain them in detail at the start itself.
+
+The first key concept is a ‘DAG’ full form ‘Directed Acyclic Graph’.
+
+Actually, Apache Airflow is all about DAGs only.
+
+If you have worked in any Big Data technology, you would already know what a DAG is, but for others here is the explanation.
+
+A DAG is unidirectional, acyclic graph connecting the edges. 
+
+Where each node in the graph is a task, and edges define dependencies amongst tasks.
+
+The graph is enforced to be acyclic so that there are no circular dependencies or loops that can cause infinite execution loops.
+
+So suppose this is a directed graph, then for this graph to be a ‘Directed Acyclic Graph’, there should not be any cyclic dependency in it.
+
+Means there should be no such case in which any node - node 1 is going to node 2 and node2 is coming back to node 1.
+
+If this happens then it means it is a cycle or a loop and that graph is not Acyclic.
+
+In this graph there is no such case where two nodes are in cycle.
+
+See, if you have to reach node 8 from node 1 then this is the path Node 1 to node 5 to node 7 and finally to node 8.
+
+but there would be no such route which can lead us back to node 1 from node 8.
+
+In fact, you can pick any 2 nodes in this graph and you won’t find a reverse route between those 2 nodes.
+
+Now talking about DAG in context with Airflow, a DAG is a collection of all the tasks you want to run, and it is organized in a way that it reflects their 
+relationships and dependencies.
+
+In this graph each node is a task and edges define dependencies amongst tasks.
+
+Let me throw an example here.
+
+Let’s assume we have a scenario where we have to calculate the total number of marks obtained by John and Kelly from this input file.
+
+To do so, our pipeline or you can say the series of tasks would look like this.
+
+Read the input dataset.From it, filter all the records of John, filter all the records of Kelly.
+
+Then do a GROUP BY and at last total of their marks. Right?
+
+Let me assign, each of these steps with some task numbers.
+
+Okay, so now the naive approach to schedule these tasks would be T1 -> T2 -> T3 in the series.
+
+Here you have made each task dependent on the previous one.
+
+T2 would wait for T1 to complete.T3 would wait for T2 to complete.
+
+but if you analyze your use case deeply and make your graph like this.
+
+Then starting from Filter operation, we can parallelly perform these 2 pipelines. T2, T3 and their corresponding child tasks are independent so why not after reading the dataset we run these 2 pipelines parallelly.
+
+It will save our processing time and moreover if 1 branch fails, it would not affect the other branch and we can get output from it.
+
+This is a good thought, and this is exactly what DAG does.
+
+Converting our pipeline as a DAG of tasks provides us the way to parallelize them in an efficient manner.
+
+With the help of DAG, it can be decided what all tasks can be run in parallel and what all tasks should be run in a sequence and then execute them accordingly.
+
+It will save us a lot of processing time and also there would be less points of failure as there would be a lot if independent tasks.
+
+I hope it is clear.
+
+Actually, what I showed you, was a very basic DAG example but in real-time projects it can be a mesh of graph with hundreds of tasks in it.
+
+Not to worry airflow can handle it very easy. Now going back to the terminologies. 
+
+Next we have a term ‘Operators’.
+
+An operator represents a single entity in a workflow that helps to carry out your task.
+
+Guys DAGs only describe ‘how’ to run a workflow and they do not perform any actual computation.
+
+On the other side, operators determine what actually gets to be done when your DAG runs.
+
+For example, in our DAG we may have a operation in which a python script is to be executed.
+
+To execute it we have a separate python operator which will actually instruct that script to run.
+
+Same like this, for each of the different operation type we have a corresponding operator.
+
+So in nutshell, you can understand an operator to be a dedicated task that will perform only
+
+a single assignment like running a bash command, executing a python function, or any other
+
+step in a DAG.
+
+You are going to see a lot many operators in practicals throughout the course.
+
+Ok, And we are using a term ‘Task’ again and again.
+
+Let’s discuss a little about tasks.
+
+Guys once an operator is instantiated, it is referred to as a task.
+
+Task is something on which the worker works upon.
+
+After an operator instantiates any script or operation and is assigned to some worker,it is referred to as a task.
+
+Next term is ‘Workflow’.
+
+Workflow is a sequence of tasks arranged in a control dependency.
+
+Workflow is nothing but a DAG only, actually both these keywords can be used interchangeably.
+
+In Oozie, we call this sequence of tasks as workflow, but in Airflow we term it as DAG.
+
+In fact, the words DAG, workflow and pipeline are more or less the same things with a little difference of using them at a proper place.
+
+Anyways, so guys these were some basic terminologies in Apache Airflow.
+
+Throughout the course we will encounter more new terms which I will explain as we go along.
+

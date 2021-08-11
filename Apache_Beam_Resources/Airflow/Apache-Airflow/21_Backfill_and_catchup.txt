@@ -1,0 +1,112 @@
+In the starting of this course, we saw that Airflow is capable of running past DAG runs
+
+with its feature Backfill & Catchup.
+
+So in this lecture we will learn about the same on how Airflow performs backfilling of
+
+historical DAG runs.
+
+Backfill means running the DAGs for previous dates for which the DAG run may have got missed
+
+or even sometimes we do it intentionally.
+
+Guys I think before we can learn about Backfill and Catchup, we should first see
+
+how does the Airflow scheduler work.
+
+Because it is the scheduler only who is responsible for backfilling any of your past DAG.
+
+I had already given the glimpse of it in some of the previous lectures.
+
+Here we see it in a little more detail.
+
+Okay.
+
+So as you know, Scheduler is the core of Airflow that monitors all the DAGs present in the
+
+DAGs folder.
+
+When started, behind the scenes, scheduler spins up a subprocess, which stays in sync
+
+with DAG folder and it periodically inspects to see whether there are any active tasks
+
+that can be triggered at that moment.
+
+Right?
+
+Guys the Airflow scheduler runs the DAG or a task based on the start_date and the schedule_interval.
+
+It is designed to trigger the DAG soon after the start_date plus the scheduler interval
+
+of that DAG is passed.
+
+To understand it, consider the example of a DAG whose start_ date is set to let say 2019-12-01.
+
+And its schedule interval is set to run daily.
+
+When fed to Airflow, this DAG will be triggered soon after 2019-12-01T23:59.
+
+i.e., just after the period it covers has ended.
+
+So the first Dag will run when start date + schedule_interval time has passed.
+
+Taking this knowledge ahead let us create a scenario to understand Backfilling.
+
+But first of all let me tell you, Backfilling, by default is true only but you can set the
+
+catchup property to false if you don’t want it.
+
+If you remember we had set it to False while we ran the tutorial for first time.
+
+Alright as a scenario Suppose in tutorial DAG only, if today’s date is 14th Dec and
+
+start_date we set to like 9th Dec, then what will happen.
+
+If catchup property would have been set to false then there won’t be any DAG runs for
+
+previous dates and it will run for today’s date only soon after 23.59.59
+
+But by default, if the catchup property is set to True, then scheduler will check for
+
+which date the last DAG run is stamped.
+
+If the last run would have been lets say of 10th Dec then scheduler will start backfilling
+
+the DAG runs starting from 11th Dec to 13th Dec, if last DAG run is 11th, then backfilling
+
+will be done for 12th and 13th Dec and all these DAGruns will execute at once.
+
+In our case since this would be a fresh run so backfilling will commence from start_date
+
+itself.
+
+Now again guess, how many Dags will totally run in our scenario.
+
+Pause this video and think.
+
+I hope you would have guessed it correct.
+
+Total 5 Dags will run from 9th to 13th Dec.
+
+It won’t run for 14th Dec, Why because for 14th Dec, the scheduled time is 23:59:59 and
+
+we are not there yet as current UTC time is this.
+
+Also this time, please notice that, we need not to trigger the DAG manually.
+
+Since scheduler is continuously in sync with metadata, so as soon as the DAG is enabled,
+
+scheduler will get to know that for this DAG catchup is set to true so backfilling needs
+
+to be done, hence it triggers them immediately.
+
+See, as soon the Dag was enabled, DAGs executions started.
+
+Completed successfully.
+
+Total 5 DAGs ran to backfill the data from 9th to 13th Dec.
+
+That’s it for Backfilling and I hope you understood.
+
+Thank you.
+

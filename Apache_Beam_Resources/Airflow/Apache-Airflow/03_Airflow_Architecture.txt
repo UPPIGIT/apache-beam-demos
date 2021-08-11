@@ -1,0 +1,183 @@
+Welcome guys to this lecture where we will discuss about the architecture of Apache Airflow and will see what are its various components and how they make the effective scheduling
+and monitoring of workflows when put together.
+
+Okay so this a depictive diagram of the Airflow architecture having components like metadata,scheduler, webserver, executor, workers.
+
+We will discuss all of these.
+
+So the first component of Airflow architecture is a ‘Metadata’.
+-------------------------------------------------------------
+
+Guys at its core, Airflow is simply a queuing system built on top of a metadata database.
+
+This metadata is a relational database which keeps the record of all your DAG runs, tasks instances, queued tasks, task states like whether some task is running, success, failed
+and all or if you want more drilled details of a job like what are the top 10 tasks currently consuming most of the memory, these things are provided to us by metadata.
+
+Simply said, the metadata component stores any data related to your DAGs, task jobs,Airflow admin.
+
+This data not only provides you the info of jobs that are currently running but it keeps a record of their historical runs also.
+
+So if you want to pull a report of say what jobs ran 5 days ago, how many DAGs were in there, which all tasks ran, their execution times etc that info is just a few clicks away
+from this database.
+
+By default, Airflow comes with SQLite database, but since it does not allow you parallelization, so it can’t be used in real-time productions.
+
+So that’s why for production environments we usually keep strong relational database like as MySQL or Postrges.
+
+Then Airflow has a ‘Scheduler’.
+-----------------------------------------------------------------
+
+This is the key component of Airflow architecture and why not, since this is the one which instructs and trigger the tasks on worker nodes.
+
+Scheduler basically, you can assume as a ‘powerful Cron’, with some more features.
+
+It’s a python process which uses DAG definition in conjunction with the state of tasks stored in the metadata database and decides what tasks need to be executed, when they should
+run, as well as their execution priority.
+
+So it basically goes into your DAG definition file, read the configurations from it, like you may have wrote a logic that task t1 will execute first before task t2. 
+
+And then after reading DAG it starts running the tasks accordingly.
+
+All these things, it does in conjunction with the task states stored in metadata. 
+
+Guys one important thing to note about scheduler is that it is tightly coupled with DAG, so suppose if your scheduler is up and running, meanwhile you made some changes into your
+
+DAG definition, then to make scheduler read and reflect those changes, you might have to restart it, then only the new tasks will run with your new configurations.
+
+Then we have a ‘Webserver’.
+-------------------------------------------------------------
+
+The basic task of webserver is to host the front-end over HTTP.
+
+This frontend is the UI component of Airflow with which a user interacts with.
+
+It is the Airflow’s shiny UI component where you can view your underlying tasks, their states, execution time, and every other data in a simple neat and clean view, where a view
+can be a graph, numbers, or any other representation.
+
+To get your views ready, the webserver runs and communicates with the database to render task state and logs in the web UI.
+
+Actually webserver is basically a flask application talking to the metadata database through some connectors.
+
+Last, we have ‘Executor’ which actually performs the tasks at ground level.
+------------------------------------------------------------------------
+
+See, the job of scheduler is only to trigger the tasks at right time, but these are the executors that actually carry out those tasks.
+
+Executor is a message queuing process that works closely with the scheduler and defines the worker processes which actually executes the scheduled tasks.
+
+Or in simpler words you can say the executors figures out what resources or what workers will actually complete those assigned tasks.
+
+Now there are different types of executors available, you can choose from them depending upon your Airflow environment.
+
+By default, Airflow uses the Sequential Executor that can run only one task instance at a time.
+
+Since there is no parallelism in sequential executors so they are not used in production and are commonly used for testing purposes.
+
+Other than sequential you can choose from other executors depending upon Airflow cluster like a single-node or multi-node cluster system.
+
+In single-node Airflow architecture, all the Airflow components like webserver, scheduler, and worker are placed on ‘single node’ called Master Node.
+
+In this single-node configuration, to get the jobs done, we use Local executors.
+
+Local executor uses python processing module to execute tasks.
+
+This type of configuration is best suited if you have a moderate number of DAGs in your Airflow applications.
+
+As in single-node cluster you cannot scale or add external resources, and are totally dependent on the available resources at the Master Node.
+
+So in this architecture, you can scale up only until all the resources on the server are used.
+
+But in case you are dealing with big data having large number of DAGs, then you would always consider to switch to another Airflow setup which is Airflow’s multi-node cluster setup.
+
+In a multi-node cluster system, you have the same Airflow components like scheduler, webserver, airflow metastore and all, but, in multi-node system, only the webserver and scheduler are
+
+kept at the Master Node and the workers are placed separately in a different instance.
+
+The benefit of this architecture is, in multi-node cluster you can scale your cluster by easily adding new multiple worker nodes in your system.
+
+And for this reason, the multi-node cluster setup is considered as good for scalability.
+
+For this kind of distributed workers on multiple machines, the recommended engine for workers is Celery.
+
+Where Celery is a job queue written in python and is used in distributed production systems to execute millions of tasks.
+
+Now guys you have to wisely choose from the two - single-node cluster system, or a multi-node distributed system.
+
+Let say if you are not dealing with TBs of data, then it’s a best choice to have the worker and scheduler locally on the same machine rather than having the workers on multiple clusters.
+
+There is 1 more decisive factor.
+
+In single node since all the components are in one machine, so no doubt, it will definitely save you from dealing with celery and make the worker response time faster but again at its own cost.
+
+As in this case both scheduler and workers are tightly coupled on the same machine so if you have to restart the scheduler after you make a change in the DAG definition means
+
+you have to kill all the running tasks on workers as well which was not in the case of celery executors.
+
+So choosing between single or distributed environment is a kind of trade-offs that you have to do for different datasets and use cases.
+
+Other than these executors you can use any of these in the production environment like Dask to scale out.
+
+If you have a Mesos cluster, use its executors or use Kubernetes.
+
+Let me add 1 more secondary component here in the architecture, which is a queuing system.
+
+Actually, all of these executors irrespective of their type, uses a task queue through which they get tasks from scheduler.
+
+So, you can imagine 1 more component in between scheduler and worker.
+
+Scheduler gets all the information about the tasks from DAG and put those tasks in a task queue from where worker picks them.
+
+Now in any of the architecture, single-node or multi-node, there must be a queuing system incorporated in the architecture.
+
+If you are using a local executor then this task queue is handled internally but in case of distributed environment this task queue should be an external system and should be managed independently like RabbitMQ or Redis.
+
+So this was all about architecture of Airflow.
+
+While we start practicals you will be seeing how these components work together to schedule the jobs.
+
+See you in next lecture.
+
+Now let me give you a glimpse of lifecycle of a task in this architecture and show you what actually happens to a task from start to end of its execution.
+
+
+---------------
+Lifecycle
+
+----------------
+
+So we saw the basic architecture of Airflow in single node and multi node cluster system and we got the knowledge about different components of Airflow.
+
+In this video, we are gonna see how in a running Airflow instance, all those different components work coherently to provide the full functionality of Airflow.
+
+I will show you a glimpse of lifecycle of a task in this architecture so you will get to know what actually happens behind the curtains to a task from start to end when a DAG is fed to Airflow.
+
+The scheduler periodically polls the DAGs folder and stays in sync with Airflow Metastore.
+
+It keeps on checking if there are any DAGs that needs to be executed. And if it finds any DAG pending for execution, the scheduler starts the DagRun for it.
+
+Where a DAG Run is an object representing an instantiation of the DAG in time.
+
+Scheduler will update that DAG state to ‘running’ in Airflow metadata and the whole execution of DAG tasks gets started.
+
+For each task, a task instance is instantiated. And the task status is set to ‘scheduled’.
+
+Now in the DAG, you may have defined the task relationships like which task needs to be executed first than the other.
+
+So the next step of scheduler is, it picks the task from the DAG according to their execution priority and put them into the queue in form of messages, where each message contains information
+such as DAG ID, task ID, what functions needs to be performed, all such stuff.
+
+The status of those task or tasks become queued at this stage. Now the worker daemons pull those tasks from queue, sets the state for each pulled task from ‘queued’ to ‘running’ and starts executing those tasks.
+
+After that, when the task execution is finished, the executor sets the corresponding state of task i.e. succeeded or failed in Airflow metadata.
+
+So that’s how a single task is carried out by Airflow. The same process is done for each task in your DAG. And after all the tasks are executed, the status of that particular DAG Run is updated
+by the scheduler with ‘success’ or ‘failed’ and the same is being updated in Airflow metastore.
+
+During all these steps, to keep its user up-to-date and provide them the real-time data of underlying executions, the Airflow webserver always remains in sync with metadata by periodically fetching
+data from it and updates the same in Airflow Web UI for users.
+
+So all this was for 1 DAG run.The scheduler is up and running while syncing with Airflow metadata and DAGs folder.
+
+As soon as it finds any new DAG to be executed based on their start_time and schedule_interval,it creates a new DAG Run for it and the whole procedure is followed again.
+
+Great, so that was how Airflow carries out the DAG and its underlying tasks behind the scenes and I hope with this you are now pretty much clear with architecture of airflow and the responsibility of each of its component.

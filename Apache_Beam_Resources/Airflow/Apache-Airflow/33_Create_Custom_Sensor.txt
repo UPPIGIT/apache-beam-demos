@@ -1,0 +1,119 @@
+So in the last lecture we learnt how to create a custom operator using plugins.
+
+In this video we will see how to create a custom sensor.
+
+I have already explained the built-in FileSensorOperator, using which, we can poke any location to look
+
+for a file.
+
+In this lecture, we will extend the functionalities of a sensor by creating our own sensor operator
+
+that will keep on poking a certain directory, until, it receives a minimum of 5 files at
+
+that location.
+
+So, let’s get started.
+
+Go to demo_plugin.
+
+To create custom sensor, we would need to extend our class from its corresponding base
+
+class, for sensor which is BaseSensorOperator class.
+
+After the import, the next step would be to create the class.
+
+Inside the class definition, first thing first, we need to define the constructor for this
+
+class that will get invoked first.
+
+So here, same like DataTransferOperator’s constructor, we have a constructor for this
+
+class.
+
+FileCountSensor would expect 2 parameters – the path to directory which it will poke,
+
+and the file system connection id which would be the same connection id ‘fs_default’
+
+that we passed while using FileSensorOperator.
+
+Constructor definition is ready.
+
+Next, guys just like for an operator plugin, overriding an ‘execute’ method is compulsory,
+
+here for sensor plugin, you always need to override a ‘poke’ method whose return
+
+type is Boolean.
+
+Inside the poke method only, we will define all the functioning of this sensor.
+
+Functioning like – at what location should it poke, what conditions should be met for
+
+successful poke, this kind of stuff.
+
+So def poke(self, context): And I will paste the definition.
+
+Since I have used some hooks in its definition, I would need to import the relevant packages.
+
+Coming back to code explanation, this is a very simple python code, where first we are
+
+setting up the connection with filesystem using FSHook.
+
+Then from that hook getting the base path.
+
+Then to the basepath we are kind of appending our file directory path giving us the complete
+
+path at which our sensor will poke.
+
+Then an optional log statement.
+
+After all this, here in the ‘try’ block we have a ‘for’ loop to get every file
+
+or directory at the specified location.
+
+‘if’ the number of ‘files’ is greater than 5, then return ‘true’ otherwise return
+
+false, Also it would return false in case of any
+
+OS errors.
+
+Good, so with this, our custom Sensor operator has been created, we are left with the last
+
+mandate thing, pass it into the plugins list.
+
+Okay… everything from plugins side is done.
+
+let’s hop in to the DAG file and use this new operator.
+
+to use the new operator, first we need to import it.
+
+import FileCountSensor.
+
+I will reuse this task– FileCountSensor, as parameters, first would be a task_id.
+
+Next parameter would be the path to the location where this sensor should check for files.
+
+so dir_path equals... Next parameter is the file system connection id ‘fs_default’
+
+then specify the poke_interval, Let it be 5 seconds.
+
+Specify the timeout after which this sensor will fail, let it be 100 seconds
+
+DAG is ready and to reflect the changes, we need to restart Airflow again.
+
+Before I run the DAG, let me check how many files we currently have in plugins folder.
+
+DAG is running.
+
+Open the graph view.
+
+As you can see, since we have 3 files in plugins folder, means the specified criteria is not
+
+met, hence after 5 seconds, the FileCountSensor is poking the same location again.
+
+Let us add 2 more files in plugins folder.
+
+Great, just after FileCountSensor locates that there are 5 files at the specified location,
+
+it finds the given criteria has been met so ran successfully and exited.
+
+So that was how you can create your own custom sensors which will work just the way you want.

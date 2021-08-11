@@ -1,0 +1,116 @@
+Welcome to this new lecture where we will discuss about a special kind of Airflow file
+
+called ‘.airflowignore’.
+
+Starting with its definition, ‘.airflowignore’ file specifies the list of files or directories
+
+in the DAG_FOLDER that Airflow should intentionally ignore.
+
+To understand it, let’s directly create an ‘.airflowignore’ file.
+
+so inside your DAG_FOLDER, create a new file named .airflowignore.
+
+And inside this ignore file specify the name of
+
+files that you wish to get ignored or skipped by Airflow.
+
+Please have a look, I have these many total 7 files in dags folder.
+
+Let’s enter tuto in ignore file and save it.
+
+Now guys what will happen is, when Airflow will parse this DAGs folder, it will first
+
+check if there is any airflowignore file written in it.
+
+After finding the ignore file, it will see the regular expression specified in it, which
+
+in our case is the string ‘tuto’, so Airflow will skip those files or directories whose
+
+name contains tuto in it.
+
+i.e. these two tuto.py and tutorial.py files will get ignored.
+
+Got it.
+
+Now let’s go to the Airflow CLI and check what we will get if we list the dags.
+
+the dags.
+
+And before I list the dags let me run the airflow scheduler command first.
+
+So guys here at this point the scheduler is searching for files in the dags folder.
+
+And after the search is complete, it has found 5 files there and not 7.
+
+it ignored those files whose name got matched with the pattern wrote in ignore file.
+
+Also please understand that ignore file matches the file names in Dags folder and not the DAG
+
+ids inside those files.
+
+Okay.
+
+Back to airflow CLI, lets list the dags.
+
+As expected, we got 5 dags listed.
+
+Let’s add one more pattern in the ignore file… now which files
+
+will get ignored?
+
+Any guesses… these three – mytest_1.py, mytest_dag.py and test.py because all of them
+
+contains the pattern ‘test’ in them.
+
+Save it.
+
+And list the dags again.
+
+so all those file names with pattern ‘tuto’ and ‘test’ got ignored.
+
+Adding some key points for airflowignore file.
+
+As a use case, I will say that this file comes handy in testing environments where you want
+
+to deal with only those DAGs which needs to be tested.
+
+In that case, all the working DAGs you can put in ignore file and play with only fewer
+
+DAGs.
+
+Moreover, this file can also be used to ignore some old DAGs not getting used currently.
+
+Instead of purging or scraping them, you can place them in ignore file.
+
+Then, airflowignore file should always be put into the DAG_FOLDER where all your DAGs
+
+are listed.
+
+Apart from specifying the full name of file, you can also specify a regular expression
+
+as well, where a regular expression is a sequence of characters that define a search pattern.
+
+For example, if you have dag files in your dags folder like test_1, test_2, and so on.
+
+Then you can enter a regular expression of ‘test_[\d]’ that will ignore any of the
+
+file starting with test underscore followed by a digit.
+
+Guys you can create any number of regular expressions and they are easily available
+
+on internet.
+
+Overall, .airflowignore file works just same like we have .gitignore file.
+
+The scope of airflowignore file is recursive.
+
+i.e. the directory it is in plus all its subdirectories.
+
+That’s all for the ignore file.
+
+Thank you.
+
+
+Search all course questions
+Search all course questions
+Loading...

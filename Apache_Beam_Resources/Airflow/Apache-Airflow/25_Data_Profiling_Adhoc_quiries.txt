@@ -1,0 +1,101 @@
+Data Profiling 
+If you remember, in store_sales project and Hooks lecture, we had dealt with databases
+
+where, after running DAGs, to cross check the results we had to run SQL queries in MySQL
+
+and Postrges containers by going through PowerShell.
+
+Nothing bad in that approach.
+
+But to make your workflows more productive, Airflow provides us a very simple query interface
+
+to write SQL queries and get the results quickly in UI itself. That component is adhoc queries.
+
+In UI, to interact with data we have ‘Data profiling’ section and inside it we have - ‘Adhoc Query.
+
+The Ad Hoc query allows you to run any SQL query just like if you are directly interacting
+
+with the database.
+
+In this lecture I will give you a short trip on how we can run SQL queries in UI and will
+
+run the same SQL statements that we ran in our stores project and hooks lecture.
+
+To interact with database, first thing you have to do is create database connection which
+
+we already did.
+
+We already have ‘mysql_conn’ for Sql and ‘postgres_conn’ for postgres database.
+
+So let’s first go with My SQL one.
+
+And then just put your SQL statement in this textbox.
+
+As simple as that.
+
+Okay so… to list down tables Show Tables and click on ‘Run’.
+
+All the tables are there.
+
+Now let us see location wise profits. That groupby query which you ran to calculate the location profit.
+
+great we got the same results.
+
+Similarly, you can execute any SQL statement like DROP, TRUNCATE, whatever.
+
+So that was for MySQL, now let’s run the Postgres commands.
+
+Select the Postgres connection.
+
+And then start running the commands which we ran in hooks lecture.
+
+If you remember, in store_sales project and Hooks lecture, we had dealt with databases
+
+where, after running DAGs, to cross check the results we had to run SQL queries in MySQL
+
+and Postrges containers by going through PowerShell.
+
+Nothing bad in that approach.
+
+But to make your workflows more productive, Airflow provides us a very simple query interface
+
+to write SQL queries and get the results quickly in UI itself. That component is adhoc queries.
+
+In UI, to interact with data we have ‘Data profiling’ section and inside it we have - ‘Adhoc Query.
+
+The Ad Hoc query allows you to run any SQL query just like if you are directly interacting
+
+with the database.
+
+In this lecture I will give you a short trip on how we can run SQL queries in UI and will
+
+run the same SQL statements that we ran in our stores project and hooks lecture.
+
+To interact with database, first thing you have to do is create database connection which
+
+we already did.
+
+We already have ‘mysql_conn’ for Sql and ‘postgres_conn’ for postgres database.
+
+So let’s first go with My SQL one.
+
+And then just put your SQL statement in this textbox.
+
+As simple as that.
+
+Okay so… to list down tables Show Tables and click on ‘Run’.
+
+All the tables are there.
+
+Now let us see location wise profits. That groupby query which you ran to calculate the location profit.
+
+great we got the same results.
+
+Similarly, you can execute any SQL statement like DROP, TRUNCATE, whatever.
+
+So that was for MySQL, now let’s run the Postgres commands.
+
+Select the Postgres connection.
+
+And then start running the commands which we ran in hooks lecture.
+
